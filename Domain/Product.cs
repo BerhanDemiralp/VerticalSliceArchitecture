@@ -2,9 +2,9 @@
 {
     public class Product
     {
-        public int Id { get; init; } = default!;
-        public string Name { get; init; } = default!;
-        public decimal Price { get; init; }
-        public int? CategoryId { get; init; }
+        public int Id { get; set; } 
+        public string Name { get; set; } 
+        public decimal Price { get; set; }
+        public int? CategoryId { get; set; }
     }
 }
