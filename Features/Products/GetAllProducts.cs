@@ -24,7 +24,7 @@ namespace VerticalSliceArchitecture.Features.Products
                 return Results.Ok(response);
             })
             .WithName("GetAllProducts")
-            .WithSummary("List all products")
+            .WithSummary("List all products)
             .WithDescription("Returns all products.")
             .Produces<List<Response>>(StatusCodes.Status200OK);
         }

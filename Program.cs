@@ -13,16 +13,16 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 // using Microsoft.Extensions.Caching.StackExchangeRedis;
-
+var redisCfg = builder.Configuration["Redis:Configuration"] ?? "localhost:6379";
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     // Prod’da bunu: builder.Configuration.GetConnectionString("Redis") vs. yapýn
-    options.Configuration = "localhost:6379";
-    options.InstanceName = "cache"; // key prefix
+    options.Configuration = redisCfg;
+    options.InstanceName = "vsa:"; // key prefix
 });
 
-
-builder.Services.AddDbContext<AppDbContext>(option => option.UseSqlite(builder.Configuration.GetConnectionString("Connection")));
+var dbConn = builder.Configuration["ConnectionStrings:Connection"] ?? builder.Configuration.GetConnectionString("Connection");
+builder.Services.AddDbContext<AppDbContext>(option => option.UseSqlite(dbConn));
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
@@ -35,7 +35,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

@@ -4,13 +4,21 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>19753f40-143b-48c7-a835-fc0869e9b1e1</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="Properties\launchSettings.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
 	<PackageReference Include="Mapster" Version="7.4.0" />
 	<PackageReference Include="MediatR" Version="12.4.1" />
 	<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.9" />
+	<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
 	<PackageReference Include="Scalar.AspNetCore" Version="2.8.0" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />

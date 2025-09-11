@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using VerticalSliceArchitecture.Domain;
 using VerticalSliceArchitecture.Infrastructure;
 
 namespace VerticalSliceArchitecture.Features.Products
 {
-    public class GetProductById
+    public static class GetProductById
     {
         public record Response(int Id, string Name, decimal Price, int? CategoryId);
 
@@ -21,6 +22,10 @@ namespace VerticalSliceArchitecture.Features.Products
                     .Select(p => new Response(p.Id, p.Name, p.Price, p.CategoryId))
                     .SingleOrDefaultAsync(ct);
 
+                if (response is null)
+                {
+                    return Results.NotFound();
+                }
                 return Results.Ok(response);
             })
             .WithName("GetProductById")

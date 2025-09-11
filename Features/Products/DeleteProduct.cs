@@ -26,7 +26,7 @@ namespace VerticalSliceArchitecture.Features.Products
                 return Results.NoContent();
             })
             .WithName("DeleteProduct")
-            .WithSummary("Deletes an existing product.")
+            .WithSummary("Deletes an existing product")
             .WithDescription("Deletes a product by its unique ID.")
             .Produces<NoContent>(StatusCodes.Status204NoContent)
             .Produces<NotFound>(StatusCodes.Status404NotFound);
