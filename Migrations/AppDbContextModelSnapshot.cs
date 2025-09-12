@@ -45,8 +45,7 @@ namespace VerticalSliceArchitecture.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("TEXT")
-                        .HasDefaultValue(0);
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 

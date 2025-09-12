@@ -1,53 +1,72 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
-using System.Text.Json;
 using VerticalSliceArchitecture.Domain;
 using VerticalSliceArchitecture.Infrastructure;
+using static VerticalSliceArchitecture.Features.Products.Contracts;
 
-namespace VerticalSliceArchitecture.Features.Products
+namespace VerticalSliceArchitecture.Features.Products;
+
+public static class GetProductById
 {
-    public static class GetProductById
+    public record RouteParameter(int Id);
+    public class Handler
     {
-        public record Response(int Id, string Name, decimal Price, int? CategoryId);
+        private readonly AppDbContext _db;
+        private readonly IProductCache _cache;
 
-        public static void Map(IEndpointRouteBuilder routes)
+        public Handler(AppDbContext db, IProductCache cache)
         {
-            var group = routes.MapGroup("/api/products")
-                             .WithTags("Products");
-
-            group.MapGet("/{id}", async (int id, AppDbContext db, [FromServices] IProductCache cache, CancellationToken ct) =>
-            {
-                var cachedProduct = await cache.GetProductAsync(id, ct);
-                if (cachedProduct != null)
-                {
-                    // If found, return it directly.
-                    return Results.Ok(cachedProduct);
-                }
-
-                // If not found in the cache, fetch from the database.
-                var response = await db.Products
-                    .AsNoTracking()
-                    .Where(p => p.Id == id)
-                    .Select(p => new Response(p.Id, p.Name, p.Price, p.CategoryId))
-                    .SingleOrDefaultAsync(ct);
-
-                if (response is null)
-                {
-                    return Results.NotFound();
-                }
-
-                // Cache the new product data using the caching service.
-                await cache.SetProductAsync(response, TimeSpan.FromMinutes(5), ct);
-
-                return Results.Ok(response);
-            })
-            .WithName("GetProductById")
-            .WithSummary("Get an existing product.")
-            .WithDescription("Get a product by its unique ID, with caching.")
-            .Produces<NoContent>(StatusCodes.Status204NoContent)
-            .Produces<NotFound>(StatusCodes.Status404NotFound);
+            _db = db;
+            _cache = cache;
         }
+
+        // İşlemi gerçekleştiren ana metot. Query'yi parametre olarak alır.
+        public async Task<Results<Ok<ProductDto>, NotFound>> Handle(RouteParameter routeParameter, CancellationToken ct)
+        {
+            var cachedProduct = await _cache.GetProductAsync(routeParameter.Id, ct);
+            if (cachedProduct != null)
+            {
+                // Önbellekte varsa, doğrudan döndür.
+                return TypedResults.Ok(cachedProduct);
+            }
+
+            // Önbellekte yoksa, veritabanından getir.
+            var response = await _db.Products
+                .AsNoTracking()
+                .Where(p => p.Id == routeParameter.Id)
+                .Select(p => new ProductDto(p.Id, p.Name, p.Price, p.CategoryId))
+                .SingleOrDefaultAsync(ct);
+
+            if (response is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            // Veritabanından gelen veriyi önbelleğe al.
+            await _cache.SetProductAsync(response, TimeSpan.FromMinutes(5), ct);
+
+            return TypedResults.Ok(response);
+        }
+    }
+
+    public static void Map(IEndpointRouteBuilder routes)
+    {
+        var group = routes.MapGroup("/api/products")
+            .WithTags("Products");
+
+        group.MapGet("/{id}", async(
+            [AsParameters] RouteParameter routeParameter,
+            [FromServices] Handler handler,
+            CancellationToken ct) =>
+        {
+            return await handler.Handle(routeParameter, ct);
+        })
+        .WithName("GetProductById")
+        .WithSummary("Get an existing product.")
+        .WithDescription("Get a product by its unique ID, with caching.")
+        .Produces<ProductDto>(StatusCodes.Status200OK)
+        .Produces<NotFound>(StatusCodes.Status404NotFound);
     }
 }

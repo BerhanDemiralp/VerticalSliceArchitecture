@@ -1,11 +1,15 @@
 ﻿namespace VerticalSliceArchitecture.Features.Products;
+using static VerticalSliceArchitecture.Features.Products.Contracts;
 
 public interface IProductCache
 {
-    Task<GetProductById.Response?> GetProductAsync(int productId, CancellationToken ct);
-    Task SetProductAsync(GetProductById.Response product, TimeSpan duration, CancellationToken ct);
+    Task<ProductDto?> GetProductAsync(int productId, CancellationToken ct);
+    Task SetProductAsync(ProductDto product, TimeSpan duration, CancellationToken ct);
 
     // GetAllProducts.Response
-    Task<GetAllProducts.Response?> GetAllProductsAsync(CancellationToken ct);
-    Task SetAllProductsAsync(GetAllProducts.Response products, TimeSpan duration, CancellationToken ct);
+    Task<ProductListDto?> GetAllProductsAsync(CancellationToken ct);
+    Task SetAllProductsAsync(ProductListDto products, TimeSpan duration, CancellationToken ct);
+
+    Task RemoveProductAsync(int productId, CancellationToken ct);
+    Task RemoveAllProductsAsync(CancellationToken ct);
 }

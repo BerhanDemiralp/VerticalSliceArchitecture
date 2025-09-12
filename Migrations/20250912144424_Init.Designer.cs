@@ -10,8 +10,8 @@ using VerticalSliceArchitecture.Infrastructure;
 namespace VerticalSliceArchitecture.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250910104642_First")]
-    partial class First
+    [Migration("20250912144424_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

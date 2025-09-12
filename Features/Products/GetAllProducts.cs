@@ -1,55 +1,65 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using VerticalSliceArchitecture.Domain;
 using VerticalSliceArchitecture.Infrastructure;
-using Microsoft.AspNetCore.Mvc; // [FromServices] için bu namespace'i eklemelisiniz
+using static VerticalSliceArchitecture.Features.Products.Contracts;
 
-namespace VerticalSliceArchitecture.Features.Products
+namespace VerticalSliceArchitecture.Features.Products;
+
+public static class GetAllProducts
 {
-    public static class GetAllProducts
+    public class Handler
     {
-        public record Response(List<Product> Products);
+        private readonly AppDbContext _db;
+        private readonly IProductCache _cache;
 
-        public static void Map(IEndpointRouteBuilder routes)
+        public Handler(AppDbContext db, IProductCache cache)
         {
-            var group = routes.MapGroup("/api/products")
-                             .WithTags("Products");
-
-            group.MapGet("/", async (AppDbContext db, [FromServices] IProductCache cache, CancellationToken ct) =>
-            {
-                var cacheDuration = TimeSpan.FromMinutes(10);
-
-                // 1. Önbelleği kontrol et
-                var response = await cache.GetAllProductsAsync(ct);
-
-                if (response is not null)
-                {
-                    // 2. Önbellekte veri varsa, direkt döndür.
-                    return Results.Ok(response);
-                }
-
-                // 3. Önbellekte veri yoksa, veritabanından getir.
-                var productsFromDb = await db.Products
-                    .AsNoTracking()
-                    .Select(p => new Product
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        Price = p.Price,
-                        CategoryId = p.CategoryId
-                    })
-                    .ToListAsync(ct);
-
-                // 4. Gelen veriyi GetAllProducts.Response tipine atama
-                var allProductsResponse = new GetAllProducts.Response(productsFromDb);
-
-                // 5. Yeni veriyi önbelleğe ekle
-                await cache.SetAllProductsAsync(allProductsResponse, cacheDuration, ct);
-
-                // 6. Sonucu döndür
-                return Results.Ok(allProductsResponse);
-            });
+            _db = db;
+            _cache = cache;
         }
+
+        public async Task<Results<Ok<ProductListDto>, NotFound>> Handle( CancellationToken ct)
+        {
+
+            var cachedProducts = await _cache.GetAllProductsAsync(ct);
+
+            if (cachedProducts != null)
+            {
+                return TypedResults.Ok(cachedProducts);
+            }
+
+            var productsFromDb = await _db.Products
+                .AsNoTracking()
+                .Select(p => new ProductDto(p.Id, p.Name, p.Price, p.CategoryId))
+                .ToListAsync(ct);
+
+            if (productsFromDb is null)
+            {
+                return TypedResults.NotFound();
+            }
+            var response = new ProductListDto(productsFromDb);
+            await _cache.SetAllProductsAsync(response, TimeSpan.FromMinutes(10), ct);
+            return TypedResults.Ok(response);
+        }
+    }
+
+    public static void Map(IEndpointRouteBuilder routes)
+    {
+        var group = routes.MapGroup("/api/products")
+                         .WithTags("Products");
+
+        group.MapGet("/", async (
+            [FromServices] Handler handler,
+            CancellationToken ct) =>
+        {
+            return await handler.Handle(ct);
+        })
+        .WithName("GetAllProducts")
+        .WithSummary("Get all products.")
+        .Produces<ProductListDto>(StatusCodes.Status200OK)
+        .Produces<NotFound>(StatusCodes.Status404NotFound);
     }
 }

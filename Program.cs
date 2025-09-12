@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using System.Data.Common;
 using VerticalSliceArchitecture.Common;
 using VerticalSliceArchitecture.Domain;
 using VerticalSliceArchitecture.Features.Products;
@@ -8,12 +9,10 @@ using VerticalSliceArchitecture.Services.Caching;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-// using Microsoft.Extensions.Caching.StackExchangeRedis;
+// Redis
 var redisCfg = builder.Configuration["Redis:Configuration"] ?? "localhost:6379";
 builder.Services.AddStackExchangeRedisCache(options =>
 {
@@ -24,10 +23,17 @@ builder.Services.AddStackExchangeRedisCache(options =>
 builder.Services.AddSingleton(typeof(ICacheService<>), typeof(CacheService<>));
 builder.Services.AddScoped<IProductCache, ProductCacheService>();
 
+// Handlers
+builder.Services.AddScoped<GetAllProducts.Handler>();
+builder.Services.AddScoped<GetProductById.Handler>();
+builder.Services.AddScoped<CreateProduct.Handler>();
+builder.Services.AddScoped<DeleteProduct.Handler>();
+builder.Services.AddScoped<UpdateProduct.Handler>();
 
-var dbConn = builder.Configuration["ConnectionStrings:Connection"] ?? builder.Configuration.GetConnectionString("Connection");
-builder.Services.AddDbContext<AppDbContext>(option => option.UseSqlite(dbConn));
+var dbConn = builder.Configuration["ConnectionStrings:Connection"]
+    ?? "Data Source=/data/VS.db;Cache=Shared;Mode=ReadWriteCreate;Pooling=True;Journal Mode=Delete;Foreign Keys=True";
 
+builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite(dbConn));
 // builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 var app = builder.Build();
 
@@ -39,12 +45,21 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
-// Minimal API Endpoints
 app.MapEndpoints();
+
+// Veritabaný migrate/ensure
+using (var scope = app.Services.CreateScope())
+{
+    var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DbInit");
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Sadece migrate (silme yok!)
+    await db.Database.MigrateAsync();
+
+    // Baðlandýðýn gerçek dosya yolu:
+    DbConnection cnn = db.Database.GetDbConnection();
+}
 
 app.Run();
