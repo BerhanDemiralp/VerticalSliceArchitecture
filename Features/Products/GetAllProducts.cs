@@ -21,6 +21,11 @@ namespace VerticalSliceArchitecture.Features.Products
                     .Select(p => new Response(p.Id, p.Name, p.Price, p.CategoryId))
                     .ToListAsync(ct);
 
+                if (response is null)
+                {
+                    return Results.NotFound();
+                }
+
                 return Results.Ok(response);
             })
             .WithName("GetAllProducts")

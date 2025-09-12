@@ -20,10 +20,7 @@ services:
 
   verticalslice-dev:
     profiles: ["dev"]
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: build  
+    image: mcr.microsoft.com/dotnet/sdk:9.0
     container_name: vsa-api-dev
     working_dir: /src
     environment:
@@ -34,11 +31,13 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./:/src:delegated 
+      - ./:/src:delegated
       - ./VS.db:/data/VS.db
     command: >
       sh -c "
-        dotnet watch --no-hot-reload --project /src/VerticalSliceArchitecture.csproj run
+        dotnet restore &&
+        dotnet build /src/VerticalSliceArchitecture.csproj -c Debug &&
+        dotnet run --project /src/VerticalSliceArchitecture.csproj --no-launch-profile --urls http://0.0.0.0:5000
       "
     depends_on:
       redis:
