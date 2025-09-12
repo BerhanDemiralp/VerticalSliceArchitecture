@@ -24,8 +24,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 var dbConn = builder.Configuration["ConnectionStrings:Connection"] ?? builder.Configuration.GetConnectionString("Connection");
 builder.Services.AddDbContext<AppDbContext>(option => option.UseSqlite(dbConn));
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-
+// builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
