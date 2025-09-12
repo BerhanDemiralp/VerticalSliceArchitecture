@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using VerticalSliceArchitecture.Domain;
-using VerticalSliceArchitecture.Infrastructure;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
+using VerticalSliceArchitecture.Domain;
+using VerticalSliceArchitecture.Infrastructure;
 
 namespace VerticalSliceArchitecture.Features.Products
 {
@@ -16,23 +17,16 @@ namespace VerticalSliceArchitecture.Features.Products
             var group = routes.MapGroup("/api/products")
                              .WithTags("Products");
 
-            // Add IDistributedCache as a parameter to the lambda function to access the cache service.
-            group.MapGet("/{id}", async (int id, AppDbContext db, IDistributedCache cache, CancellationToken ct) =>
+            group.MapGet("/{id}", async (int id, AppDbContext db, [FromServices] IProductCache cache, CancellationToken ct) =>
             {
-                // 1. Define a unique cache key for the product.
-                string cacheKey = $"product:{id}";
-
-                // 2. Try to get the product from the Redis cache.
-                string cachedProductJson = await cache.GetStringAsync(cacheKey, ct);
-
-                if (cachedProductJson != null)
+                var cachedProduct = await cache.GetProductAsync(id, ct);
+                if (cachedProduct != null)
                 {
-                    // 3. If the product is found in the cache, deserialize and return it.
-                    var cachedProduct = JsonSerializer.Deserialize<Response>(cachedProductJson);
+                    // If found, return it directly.
                     return Results.Ok(cachedProduct);
                 }
 
-                // 4. If not found in the cache, fetch the product from the database.
+                // If not found in the cache, fetch from the database.
                 var response = await db.Products
                     .AsNoTracking()
                     .Where(p => p.Id == id)
@@ -44,13 +38,8 @@ namespace VerticalSliceArchitecture.Features.Products
                     return Results.NotFound();
                 }
 
-                // 5. Product was found in the database. Now, cache it for future requests.
-                string jsonString = JsonSerializer.Serialize(response);
-                var cacheOptions = new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) // Cache for 5 minutes.
-                };
-                await cache.SetStringAsync(cacheKey, jsonString, cacheOptions, ct);
+                // Cache the new product data using the caching service.
+                await cache.SetProductAsync(response, TimeSpan.FromMinutes(5), ct);
 
                 return Results.Ok(response);
             })
