@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using VerticalSliceArchitecture.Domain;
+using VerticalSliceArchitecture.Features.FeatureFlags;
 using VerticalSliceArchitecture.Infrastructure;
 
 namespace VerticalSliceArchitecture.Features.Products;
@@ -60,7 +61,9 @@ public static class DeleteProduct
         .WithName("DeleteProduct")
         .WithSummary("Deletes an existing product.")
         .WithDescription("Deletes a product by its unique ID, and clears it from cache.")
+        .AddEndpointFilter(new FeatureFlagFilter("DeleteProductEnabled"))
         .Produces<NoContent>(StatusCodes.Status204NoContent)
         .Produces<NotFound>(StatusCodes.Status404NotFound);
+
     }
 }

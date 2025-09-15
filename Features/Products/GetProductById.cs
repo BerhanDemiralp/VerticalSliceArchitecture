@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using VerticalSliceArchitecture.Domain;
+using VerticalSliceArchitecture.Features.FeatureFlags;
 using VerticalSliceArchitecture.Infrastructure;
 using static VerticalSliceArchitecture.Features.Products.Contracts;
 
@@ -56,7 +57,7 @@ public static class GetProductById
         var group = routes.MapGroup("/api/products")
             .WithTags("Products");
 
-        group.MapGet("/{id}", async(
+        group.MapGet("/{id}", async (
             [AsParameters] RouteParameter routeParameter,
             [FromServices] Handler handler,
             CancellationToken ct) =>
@@ -66,7 +67,9 @@ public static class GetProductById
         .WithName("GetProductById")
         .WithSummary("Get an existing product.")
         .WithDescription("Get a product by its unique ID, with caching.")
+        .AddEndpointFilter(new FeatureFlagFilter("GetProductByIdEnabled"))
         .Produces<ProductDto>(StatusCodes.Status200OK)
         .Produces<NotFound>(StatusCodes.Status404NotFound);
+
     }
 }

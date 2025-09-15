@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using VerticalSliceArchitecture.Domain;
+using VerticalSliceArchitecture.Features.FeatureFlags;
 using VerticalSliceArchitecture.Infrastructure;
 using static VerticalSliceArchitecture.Features.Products.Contracts;
 
@@ -59,7 +60,10 @@ public static class GetAllProducts
         })
         .WithName("GetAllProducts")
         .WithSummary("Get all products.")
+        .AddEndpointFilter(new FeatureFlagFilter("GetAllProductsEnabled"))
         .Produces<ProductListDto>(StatusCodes.Status200OK)
         .Produces<NotFound>(StatusCodes.Status404NotFound);
+
+
     }
 }

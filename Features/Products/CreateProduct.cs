@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using VerticalSliceArchitecture.Domain;
+using VerticalSliceArchitecture.Features.FeatureFlags;
 using VerticalSliceArchitecture.Infrastructure;
 using static VerticalSliceArchitecture.Features.Products.Contracts;
 
@@ -60,7 +61,9 @@ public static class CreateProduct
         .WithName("CreateProduct")
         .WithSummary("Create a new product")
         .WithDescription("Creates a new product with Name, Price, and CategoryId.")
+        .AddEndpointFilter(new FeatureFlagFilter("CreateProductEnabled"))
         .Produces<ProductDto>(StatusCodes.Status201Created)
         .Produces(StatusCodes.Status400BadRequest);
+
     }
 }

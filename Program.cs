@@ -5,9 +5,11 @@ using VerticalSliceArchitecture.Common;
 using VerticalSliceArchitecture.Domain;
 using VerticalSliceArchitecture.Features.Categories;
 using VerticalSliceArchitecture.Features.Category;
+using VerticalSliceArchitecture.Features.FeatureFlags;
 using VerticalSliceArchitecture.Features.Products;
 using VerticalSliceArchitecture.Infrastructure;
 using VerticalSliceArchitecture.Services.Caching;
+using VerticalSliceArchitecture.Services.FeatureFlag;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -25,6 +27,13 @@ builder.Services.AddStackExchangeRedisCache(options =>
 builder.Services.AddSingleton(typeof(ICacheService<>), typeof(CacheService<>));
 builder.Services.AddScoped<IProductCache, ProductCacheService>();
 builder.Services.AddScoped<ICategoryCache, CategoryCacheService>();
+builder.Services.AddScoped<IFeatureFlagService, FeatureFlagService>();
+builder.Services.AddScoped<IFeatureFlagCache, FeatureFlagCacheService>();
+// Feature Flag Handlers
+builder.Services.AddScoped<UpdateFlagStatus.Handler>();
+builder.Services.AddScoped<GetAllFeatureFlags.Handler>();
+
+
 
 // Product Handlers
 builder.Services.AddScoped<GetAllProducts.Handler>();
@@ -64,11 +73,14 @@ using (var scope = app.Services.CreateScope())
     var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DbInit");
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-    // Sadece migrate (silme yok!)
+    // Database migration is correct
     await db.Database.MigrateAsync();
+    logger.LogInformation("Database Updated.");
 
-    // Baðlandýðýn gerçek dosya yolu:
-    DbConnection cnn = db.Database.GetDbConnection();
+    FeatureFlagInitializer.SeedFeatureFlags(db);
+    logger.LogInformation("Initial data added.");
 }
+
+app.Run();
 
 app.Run();

@@ -13,5 +13,6 @@ namespace VerticalSliceArchitecture.Infrastructure
         }
         public DbSet<Domain.Product> Products => Set<Domain.Product>();
         public DbSet<Domain.Category> Categories => Set<Domain.Category>();
+        public DbSet<Domain.FeatureFlag> FeatureFlags => Set<Domain.FeatureFlag>();
     }
 }
