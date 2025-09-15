@@ -3,6 +3,8 @@ using Scalar.AspNetCore;
 using System.Data.Common;
 using VerticalSliceArchitecture.Common;
 using VerticalSliceArchitecture.Domain;
+using VerticalSliceArchitecture.Features.Categories;
+using VerticalSliceArchitecture.Features.Category;
 using VerticalSliceArchitecture.Features.Products;
 using VerticalSliceArchitecture.Infrastructure;
 using VerticalSliceArchitecture.Services.Caching;
@@ -22,13 +24,20 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 builder.Services.AddSingleton(typeof(ICacheService<>), typeof(CacheService<>));
 builder.Services.AddScoped<IProductCache, ProductCacheService>();
+builder.Services.AddScoped<ICategoryCache, CategoryCacheService>();
 
-// Handlers
+// Product Handlers
 builder.Services.AddScoped<GetAllProducts.Handler>();
 builder.Services.AddScoped<GetProductById.Handler>();
 builder.Services.AddScoped<CreateProduct.Handler>();
 builder.Services.AddScoped<DeleteProduct.Handler>();
 builder.Services.AddScoped<UpdateProduct.Handler>();
+// Category Handlers
+builder.Services.AddScoped<GetAllCategories.Handler>();
+builder.Services.AddScoped<GetCategoryById.Handler>();
+builder.Services.AddScoped<CreateCategory.Handler>();
+builder.Services.AddScoped<DeleteCategory.Handler>();
+builder.Services.AddScoped<UpdateCategory.Handler>();
 
 var dbConn = builder.Configuration["ConnectionStrings:Connection"]
     ?? "Data Source=/data/VS.db;Cache=Shared;Mode=ReadWriteCreate;Pooling=True;Journal Mode=Delete;Foreign Keys=True";
