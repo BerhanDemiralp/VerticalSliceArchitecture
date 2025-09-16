@@ -1,0 +1,164 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feature Flag Test Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        h1, h2 {
+            color: #555;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+            .controls label {
+                margin-right: 15px;
+                font-weight: bold;
+            }
+
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            margin: 5px;
+        }
+
+            button:hover {
+                background-color: #0056b3;
+            }
+
+        pre {
+            background-color: #eee;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Feature Flag Test Client</h1>
+        <p>Send requests to API endpoints with different user roles and observe the results.</p>
+
+        <div class="controls">
+            <label>User Role:</label>
+            <input type="radio" id="admin" name="user_type" value="admin" checked>
+            <label for="admin">Admin</label>
+            <input type="radio" id="user" name="user_type" value="user">
+            <label for="user">User</label>
+            <input type="radio" id="default" name="user_type" value="default">
+            <label for="default">Default</label>
+        </div>
+
+        <div class="actions">
+            <h2>Product Actions</h2>
+            <button onclick="createProduct()">Create Product</button>
+            <button onclick="getAllProducts()">Get All Products</button>
+            <button onclick="deleteProduct(1)">Delete Product (ID:1)</button>
+
+            <h2>Feature Flag Actions</h2>
+            <button onclick="updateFlag('CreateProductEnabled', 'user', true)">Enable 'Create Product' for 'user'</button>
+            <button onclick="updateFlag('CreateProductEnabled', 'user', false)">Disable 'Create Product' for 'user'</button>
+            <button onclick="getAllFlags()">Get All Flags</button>
+        </div>
+
+        <hr>
+        <h2>Result</h2>
+        <pre id="results"></pre>
+
+    </div>
+
+    <script>
+        const API_URL = 'https://localhost:5000/api;
+        const results = document.getElementById('results');
+
+        function getUserType() {
+            return document.querySelector('input[name="user_type"]:checked').value;
+        }
+
+        async function fetchData(url, options = {}) {
+            try {
+                const userType = getUserType();
+                options.headers = {
+                    ...options.headers,
+                    'X-User-Type': userType,
+                    'Content-Type': 'application/json'
+                };
+
+                results.textContent = `Sending request: ${options.method || 'GET'} ${url} - Role: ${userType}`;
+
+                const response = await fetch(url, options);
+                const data = await response.json().catch(() => null);
+
+                if (response.ok) {
+                    results.textContent = `Success! Status Code: ${response.status}\n\n${JSON.stringify(data, null, 2)}`;
+                } else {
+                    results.textContent = `Error! Status Code: ${response.status}\n\n${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                results.textContent = `An error occurred during the request: ${error.message}`;
+            }
+        }
+
+        function createProduct() {
+            const productData = {
+                name: "Test Product",
+                price: 99.99,
+                categoryId: 1
+            };
+            fetchData(`${API_URL}/products`, {
+                method: 'POST',
+                body: JSON.stringify(productData)
+            });
+        }
+
+        function getAllProducts() {
+            fetchData(`${API_URL}/products`);
+        }
+
+        function deleteProduct(id) {
+            fetchData(`${API_URL}/products/${id}`, { method: 'DELETE' });
+        }
+
+        function updateFlag(flagName, userType, isEnabled) {
+            fetchData(`${API_URL}/flags/${flagName}`, {
+                method: 'PUT',
+                body: JSON.stringify({ isEnabled: isEnabled, userType: userType })
+            });
+        }
+
+        function getAllFlags() {
+            fetchData(`${API_URL}/flags`);
+        }
+    </script>
+
+</body>
+</html>

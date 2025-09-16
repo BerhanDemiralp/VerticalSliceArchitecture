@@ -10,8 +10,20 @@ using VerticalSliceArchitecture.Features.Products;
 using VerticalSliceArchitecture.Infrastructure;
 using VerticalSliceArchitecture.Services.Caching;
 using VerticalSliceArchitecture.Services.FeatureFlag;
+
 var builder = WebApplication.CreateBuilder(args);
 
+// CORS HTML frontend 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:8000")
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -53,6 +65,9 @@ var dbConn = builder.Configuration["ConnectionStrings:Connection"]
 
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlite(dbConn));
 // builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -61,6 +76,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+app.UseCors("AllowFrontend");
 
 //app.UseHttpsRedirection();
 app.UseAuthorization();
@@ -81,6 +98,6 @@ using (var scope = app.Services.CreateScope())
     logger.LogInformation("Initial data added.");
 }
 
-app.Run();
+
 
 app.Run();

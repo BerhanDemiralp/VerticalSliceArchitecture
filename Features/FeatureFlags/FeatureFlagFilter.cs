@@ -26,7 +26,7 @@ public class FeatureFlagFilter : IEndpointFilter
 
         if (!isEnabled)
         {
-            return Results.BadRequest($"The '{_flagName}' feature is currently disabled for user type '{userType}'.");
+            return Results.Unauthorized();
         }
 
         return await next(context);
