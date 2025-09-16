@@ -24,7 +24,7 @@ public static class GetProductById
         }
 
         // İşlemi gerçekleştiren ana metot. Query'yi parametre olarak alır.
-        public async Task<Results<Ok<ProductDto>, NotFound>> Handle(RouteParameter routeParameter, CancellationToken ct)
+        public async Task<Results<Ok<ProductDto>, NotFound<ErrorResponse>>> Handle(RouteParameter routeParameter, CancellationToken ct)
         {
             var cachedProduct = await _cache.GetProductAsync(routeParameter.Id, ct);
             if (cachedProduct != null)
@@ -42,7 +42,7 @@ public static class GetProductById
 
             if (response is null)
             {
-                return TypedResults.NotFound();
+                return TypedResults.NotFound(new ErrorResponse("No product with the specified ID was found."));
             }
 
             // Veritabanından gelen veriyi önbelleğe al.
@@ -69,7 +69,7 @@ public static class GetProductById
         .WithDescription("Get a product by its unique ID, with caching.")
         .AddEndpointFilter(new FeatureFlagFilter("GetProductByIdEnabled"))
         .Produces<ProductDto>(StatusCodes.Status200OK)
-        .Produces<NotFound>(StatusCodes.Status404NotFound);
+        .Produces<ErrorResponse>(StatusCodes.Status404NotFound);
 
     }
 }

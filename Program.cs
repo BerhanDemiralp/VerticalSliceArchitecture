@@ -51,6 +51,7 @@ builder.Services.AddScoped<GetAllFeatureFlags.Handler>();
 builder.Services.AddScoped<GetAllProducts.Handler>();
 builder.Services.AddScoped<GetProductById.Handler>();
 builder.Services.AddScoped<CreateProduct.Handler>();
+builder.Services.AddScoped<CreateProduct2.Handler>();
 builder.Services.AddScoped<DeleteProduct.Handler>();
 builder.Services.AddScoped<UpdateProduct.Handler>();
 // Category Handlers

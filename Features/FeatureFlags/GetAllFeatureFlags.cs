@@ -12,8 +12,6 @@ namespace VerticalSliceArchitecture.Features.FeatureFlags;
 public static class GetAllFeatureFlags
 {
     // Update the DTO to include both State and IsEnabled
-    public record FeatureFlagDto(string Name, string UserType, string? State, bool IsEnabled);
-
     public class Handler
     {
         private readonly AppDbContext _db;
@@ -28,7 +26,7 @@ public static class GetAllFeatureFlags
             var flags = await _db.FeatureFlags
                 .AsNoTracking()
                 // Select both State and IsEnabled
-                .Select(f => new FeatureFlagDto(f.Name, f.UserType, f.State, f.IsEnabled))
+                .Select(f => new FeatureFlagDto(f.Name, f.State, f.IsEnabled, f.UserType))
                 .ToListAsync(ct);
 
             if (flags is null || !flags.Any())

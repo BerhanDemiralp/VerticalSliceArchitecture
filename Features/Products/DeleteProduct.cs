@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using VerticalSliceArchitecture.Domain;
 using VerticalSliceArchitecture.Features.FeatureFlags;
 using VerticalSliceArchitecture.Infrastructure;
+using static VerticalSliceArchitecture.Features.Products.Contracts;
 
 namespace VerticalSliceArchitecture.Features.Products;
 
@@ -22,12 +23,12 @@ public static class DeleteProduct
             _cache = cache;
         }
 
-        public async Task<Results<NoContent, NotFound>> Handle(RouteParameter routeParameter, CancellationToken ct)
+        public async Task<Results<NoContent, NotFound<ErrorResponse>>> Handle(RouteParameter routeParameter, CancellationToken ct)
         {
             var product = await _db.Products.FindAsync(routeParameter.Id);
             if (product is null)
             {
-                return TypedResults.NotFound();
+                return TypedResults.NotFound(new ErrorResponse("No product with the specified ID was found."));
             }
 
             // Önce veritabanından ürünü kaldır
@@ -63,7 +64,7 @@ public static class DeleteProduct
         .WithDescription("Deletes a product by its unique ID, and clears it from cache.")
         .AddEndpointFilter(new FeatureFlagFilter("DeleteProductEnabled"))
         .Produces<NoContent>(StatusCodes.Status204NoContent)
-        .Produces<NotFound>(StatusCodes.Status404NotFound);
+        .Produces<ErrorResponse>(StatusCodes.Status404NotFound);
 
     }
 }

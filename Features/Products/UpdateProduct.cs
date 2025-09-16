@@ -24,12 +24,12 @@ public static class UpdateProduct
         }
 
         // İşlemi gerçekleştiren ana metot.
-        public async Task<Results<Ok<ProductDto>, NotFound>> Handle(RouteParameter routeParameter, Command command, CancellationToken ct)
+        public async Task<Results<Ok<ProductDto>, NotFound<ErrorResponse>>> Handle(RouteParameter routeParameter, Command command, CancellationToken ct)
         {
             var product = await _db.Products.FirstOrDefaultAsync(p => p.Id == routeParameter.Id, ct);
             if (product is null)
             {
-                return TypedResults.NotFound();
+                return TypedResults.NotFound(new ErrorResponse("No product with the specified ID was found."));
             }
 
             product.Name = command.Name;
@@ -69,6 +69,6 @@ public static class UpdateProduct
         .WithDescription("Updates a product by its unique ID, with cache invalidation.")
         .AddEndpointFilter(new FeatureFlagFilter("UpdateProductEnabled"))
         .Produces<ProductDto>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status404NotFound);
+        .Produces<ErrorResponse>(StatusCodes.Status404NotFound);
     }
 }
