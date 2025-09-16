@@ -8,23 +8,24 @@ namespace VerticalSliceArchitecture.Features.FeatureFlags;
 public class FeatureFlagFilter : IEndpointFilter
 {
     private readonly string _flagName;
+    private readonly string _requiredState;
 
-    public FeatureFlagFilter(string flagName)
+    public FeatureFlagFilter(string flagName, string requiredState = "")
     {
         _flagName = flagName;
+        _requiredState = requiredState;
     }
 
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
-        // Get the IFeatureFlagService from the request services
         var featureFlagService = context.HttpContext.RequestServices.GetRequiredService<IFeatureFlagService>();
 
-        // Extract user type from a request header
         string userType = context.HttpContext.Request.Headers["User-Type"].FirstOrDefault()?.ToLowerInvariant() ?? "default";
 
-        var isEnabled = await featureFlagService.IsEnabledAsync(_flagName, userType, context.HttpContext.RequestAborted);
+        var flag = await featureFlagService.GetFlagAsync(_flagName, userType, context.HttpContext.RequestAborted);
 
-        if (!isEnabled)
+        // Check if the flag is not null, is enabled, and if a required state is specified, check that too.
+        if (flag is null || !flag.IsEnabled || (!string.IsNullOrEmpty(_requiredState) && flag.State != _requiredState))
         {
             return Results.Unauthorized();
         }

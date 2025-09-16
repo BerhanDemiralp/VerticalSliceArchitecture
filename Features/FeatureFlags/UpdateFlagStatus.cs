@@ -12,7 +12,8 @@ namespace VerticalSliceArchitecture.Features.FeatureFlags;
 public static class UpdateFlagStatus
 {
     public record RouteParameter(string Name);
-    public record Command(bool IsEnabled, string UserType);
+    // Update the Command to handle both State and IsEnabled
+    public record Command(string? State, bool IsEnabled, string UserType);
 
     public class Handler
     {
@@ -35,14 +36,15 @@ public static class UpdateFlagStatus
                 return TypedResults.NotFound();
             }
 
+            // Update both properties
+            flag.State = command.State;
             flag.IsEnabled = command.IsEnabled;
             await _db.SaveChangesAsync(ct);
 
-            // Invalidate the cache for this specific flag
             var cacheKey = $"featureFlag:{flag.Name}:{flag.UserType}";
             await _cache.RemoveFeatureFlagAsync(cacheKey, ct);
 
-            var response = new FeatureFlagDto(flag.Name, flag.IsEnabled, flag.UserType);
+            var response = new FeatureFlagDto(flag.Name, flag.State, flag.IsEnabled, flag.UserType);
             return TypedResults.Ok(response);
         }
     }
@@ -61,7 +63,7 @@ public static class UpdateFlagStatus
             return await handler.Handle(routeParameter, command, ct);
         })
         .WithName("UpdateFeatureFlag")
-        .WithSummary("Update the status of an existing feature flag.")
+        .WithSummary("Update the state and enabled status of an existing feature flag.")
         .AddEndpointFilter(new FeatureFlagFilter("UpdateFlagStatusEnabled"))
         .Produces<FeatureFlagDto>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound);

@@ -44,6 +44,9 @@ namespace VerticalSliceArchitecture.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("State")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("UserType")
                         .IsRequired()
                         .HasColumnType("TEXT");

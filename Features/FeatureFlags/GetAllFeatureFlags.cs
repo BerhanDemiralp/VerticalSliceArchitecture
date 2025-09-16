@@ -1,14 +1,18 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿// Features/FeatureFlags/GetAllFeatureFlags.cs
+
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using VerticalSliceArchitecture.Infrastructure;
+using static VerticalSliceArchitecture.Features.FeatureFlags.Contracts;
 
 namespace VerticalSliceArchitecture.Features.FeatureFlags;
 
 public static class GetAllFeatureFlags
 {
-    public record FeatureFlagDto(string Name, string UserType, bool IsEnabled);
+    // Update the DTO to include both State and IsEnabled
+    public record FeatureFlagDto(string Name, string UserType, string? State, bool IsEnabled);
 
     public class Handler
     {
@@ -23,7 +27,8 @@ public static class GetAllFeatureFlags
         {
             var flags = await _db.FeatureFlags
                 .AsNoTracking()
-                .Select(f => new FeatureFlagDto(f.Name, f.UserType, f.IsEnabled))
+                // Select both State and IsEnabled
+                .Select(f => new FeatureFlagDto(f.Name, f.UserType, f.State, f.IsEnabled))
                 .ToListAsync(ct);
 
             if (flags is null || !flags.Any())
@@ -47,11 +52,10 @@ public static class GetAllFeatureFlags
             return await handler.Handle(ct);
         })
         .WithName("GetAllFeatureFlags")
-        .WithSummary("Gets the status of all feature flags.")
+        .WithSummary("Gets the state and enabled status of all feature flags.")
         .WithDescription("Retrieves all feature flags and their current status for all user types.")
         .AddEndpointFilter(new FeatureFlagFilter("GetAllFeatureFlagsEnabled"))
         .Produces<List<FeatureFlagDto>>(StatusCodes.Status200OK)
         .Produces<NotFound>(StatusCodes.Status404NotFound);
-
     }
 }

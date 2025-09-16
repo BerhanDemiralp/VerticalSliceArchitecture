@@ -10,8 +10,8 @@ using VerticalSliceArchitecture.Infrastructure;
 namespace VerticalSliceArchitecture.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250915112023_AddFeatureFlagsTable")]
-    partial class AddFeatureFlagsTable
+    [Migration("20250916133752_InitialDb")]
+    partial class InitialDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,6 +45,9 @@ namespace VerticalSliceArchitecture.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("State")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserType")
