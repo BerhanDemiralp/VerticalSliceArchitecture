@@ -42,6 +42,22 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+  
+  frontend-dev:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+        - ./Frontend:/app          
+    command: >
+        sh -c "npm i -g live-server &&
+                live-server --host=0.0.0.0 --port=8000 --cors --no-browser"
+    ports:
+        - "8000:8000"
+    environment:
+        - CHOKIDAR_USEPOLLING=1
+    profiles: ["dev"]           
+    depends_on:
+       - verticalslice-dev       
 
   redis:
     image: redis:7-alpine

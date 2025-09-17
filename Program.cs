@@ -51,9 +51,10 @@ builder.Services.AddScoped<GetAllFeatureFlags.Handler>();
 builder.Services.AddScoped<GetAllProducts.Handler>();
 builder.Services.AddScoped<GetProductById.Handler>();
 builder.Services.AddScoped<CreateProduct.Handler>();
-builder.Services.AddScoped<CreateProduct2.Handler>();
+builder.Services.AddScoped<CreateProductV2.Handler>();
 builder.Services.AddScoped<DeleteProduct.Handler>();
 builder.Services.AddScoped<UpdateProduct.Handler>();
+builder.Services.AddScoped<UpdateProductV2.Handler>();
 // Category Handlers
 builder.Services.AddScoped<GetAllCategories.Handler>();
 builder.Services.AddScoped<GetCategoryById.Handler>();

@@ -8,7 +8,7 @@ using static VerticalSliceArchitecture.Features.Products.Contracts;
 
 namespace VerticalSliceArchitecture.Features.Products;
 
-public static class CreateProduct2
+public static class CreateProductV2
 {
     public record Command(string Name, decimal Price, int? CategoryId);
     public class Handler
