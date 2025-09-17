@@ -752,7 +752,7 @@ app.UseCors("AllowFrontend");
 
             if (response.status === 401) {
               this.showStatus(
-                "Bu özellik devre dışı veya kullanıcı türünüz için yetkilendirilmemiş.",
+                "This feature is disabled or not authorized for your user type.",
                 "error"
               );
               this.clearResults();
@@ -778,7 +778,7 @@ app.UseCors("AllowFrontend");
                   }
                 } catch (e) {
                   // JSON'ı okuyamazsa veya hatalıysa, genel hatayı kullanmaya devam et
-                  console.error("Hata JSON'ı ayrıştırılamadı:", e);
+                  console.error("Failed to parse JSON error: ", e);
                 }
               }
               throw new Error(errorMessage);
@@ -825,8 +825,8 @@ app.UseCors("AllowFrontend");
             this.displayProducts(data.items);
             this.showStatus("Products loaded successfully!");
           } else {
-            console.error("Beklenen formatta veri alınamadı:", data);
-            this.showStatus("Beklenen ürün verisi alınamadı.", "error");
+            console.error("Couldn't get data in the expected format: ", data);
+            this.showStatus("Couldn't get the expected product data.", "error");
           }
         }
 
@@ -904,7 +904,7 @@ app.UseCors("AllowFrontend");
           if (productId) {
             const updateFlag = this.featureFlags["UpdateProductEnabled"];
             if (updateFlag && updateFlag.state) {
-              url = `${this.baseUrl}/products/${updateFlag.state}/${productId}`;
+              url = `${this.baseUrl}/products/${createFlag.state}/${productId}`;
             } else {
               url = `${this.baseUrl}/products/${productId}`;
             }
