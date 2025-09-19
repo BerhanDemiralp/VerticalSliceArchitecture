@@ -232,6 +232,7 @@
       }
 
       .product-price {
+        margin-left: 5px;
         color: #27ae60;
         font-weight: 600;
         font-size: 1.2em;
@@ -760,24 +761,20 @@ app.UseCors("AllowFrontend");
             }
 
             if (!response.ok) {
-              // Sunucudan gelen hata mesajını okumaya çalış
               let errorMessage = `HTTP error! status: ${response.status}`;
               const contentType = response.headers.get("content-type");
 
               if (contentType && contentType.includes("application/json")) {
                 try {
                   const errorData = await response.json();
-                  // 'error', 'message' veya 'Error' anahtarını kontrol et
                   if (errorData.error) {
                     errorMessage = errorData.error;
                   } else if (errorData.message) {
                     errorMessage = errorData.message;
                   } else if (errorData.Error) {
-                    // Büyük 'E' ile de kontrol et
                     errorMessage = errorData.Error;
                   }
                 } catch (e) {
-                  // JSON'ı okuyamazsa veya hatalıysa, genel hatayı kullanmaya devam et
                   console.error("Failed to parse JSON error: ", e);
                 }
               }
@@ -790,7 +787,7 @@ app.UseCors("AllowFrontend");
             }
             return response;
           } catch (error) {
-            this.showStatus(`Hata: ${error.message}`, "error");
+            this.showStatus(`Error: ${error.message}`, "error");
             this.clearResults();
             return null;
           }
@@ -973,6 +970,7 @@ app.UseCors("AllowFrontend");
                                 <span class="product-name">${
                                   product.name
                                 }</span>
+                                </>
                                 <span class="product-price">$${
                                   product.price
                                 }</span>

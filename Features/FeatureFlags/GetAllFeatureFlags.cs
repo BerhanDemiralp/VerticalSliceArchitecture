@@ -41,7 +41,9 @@ public static class GetAllFeatureFlags
     public static void Map(IEndpointRouteBuilder routes)
     {
         var group = routes.MapGroup("/api/flags")
-            .WithTags("Feature Flags");
+            .WithTags("Feature Flags")
+            .RequireAuthorization("AdminOnly");
+
 
         group.MapGet("/", async (
             [FromServices] Handler handler,

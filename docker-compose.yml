@@ -28,6 +28,11 @@ services:
       - ASPNETCORE_URLS=http://+:5000
       - ConnectionStrings__Connection=Data Source=/data/VS.db
       - Redis__Configuration=redis:6379
+      - Auth__Issuer=vsa
+      - Auth__Audience=vsa.clients
+      - Auth__Secret=dev_32byte_secret_dev_32byte_secret! 
+      - Auth__AccessTokenMinutes=30
+      - Auth__RefreshTokenDays=7
     ports:
       - "5000:5000"
     volumes:
