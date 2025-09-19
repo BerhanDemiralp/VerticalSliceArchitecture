@@ -1234,7 +1234,7 @@ app.UseCors("AllowFrontend");
                 let url, method;
                 if (productId) {
                     const updateFlag = this.featureFlags['UpdateProductEnabled'];
-                    if (updateFlag && updateFlag.state) {
+                    if (updateFlag && updateFlag.state && updateFlag.toLowerCase()=="v2") {
                         url = `${this.baseUrl}/products/${updateFlag.state}/${productId}`;
                     } else {
                         url = `${this.baseUrl}/products/${productId}`;
@@ -1242,11 +1242,7 @@ app.UseCors("AllowFrontend");
                     method = 'PUT';
                 } else {
                     const createFlag = this.featureFlags['CreateProductEnabled'];
-                    if (createFlag && createFlag.state) {
-                        url = `${this.baseUrl}/products/${createFlag.state}`;
-                    } else {
-                        url = `${this.baseUrl}/products`;
-                    }
+                    url = `${this.baseUrl}/products`;
                     method = 'POST';
                 }
 
@@ -1498,6 +1494,11 @@ app.UseCors("AllowFrontend");
             }
 
             async updateFlagStatus(name, userType, isEnabled, state) {
+                if (this.userRole.toLowerCase() !== 'admin') {
+                    this.showStatus('Not authorized to update flags.', 'error');
+                    return;
+                }
+
                 console.log(`📡 Updating flag: ${name} for ${userType}`);
 
                 const requestBody = {
@@ -1536,6 +1537,11 @@ app.UseCors("AllowFrontend");
             }
 
             async updateStateFromUI(flagName, userType, uniqueId) {
+                if (this.userRole.toLowerCase() !== 'admin') {
+                    this.showStatus('Not authorized to update flags.', 'error');
+                    return;
+                }
+
                 const new_state_value = document.getElementById(`state-input-${uniqueId}`).value.trim();
                 const new_state = new_state_value === '' ? null : new_state_value;
                 const currentFlag = this.featureFlags[flagName];
@@ -1575,14 +1581,15 @@ app.UseCors("AllowFrontend");
                     return;
                 }
 
+                const isAdmin = this.userRole.toLowerCase() === 'admin';
+
                 const table = `
                         <table class="flag-table">
                             <thead>
                                 <tr>
                                     <th>Name</th>
                                     <th>User Type</th>
-                                    <th>Status</th>
-                                    <th>State</th>
+                                    ${isAdmin ? '<th>Status</th><th>State</th>' : ''}
                                 </tr>
                             </thead>
                             <tbody>
@@ -1593,11 +1600,11 @@ app.UseCors("AllowFrontend");
                                         <tr>
                                             <td>${flag.name}</td>
                                             <td>${flag.userType}</td>
+                                            ${isAdmin ? `
                                             <td>
                                                 <button
                                                     class="toggle-btn ${flag.isEnabled ? 'enabled' : 'disabled'}"
-                                                    onclick="productManager.updateFlagStatus('${flag.name}', '${flag.userType
-                                }', ${!flag.isEnabled}, '${flag.state}')">
+                                                    onclick="productManager.updateFlagStatus('${flag.name}', '${flag.userType}', ${!flag.isEnabled}, '${flag.state}')">
                                                     ${flag.isEnabled ? 'Enabled' : 'Disabled'}
                                                 </button>
                                             </td>
@@ -1621,12 +1628,12 @@ app.UseCors("AllowFrontend");
                                                     <button
                                                         class="btn btn-success"
                                                         style="padding: 6px 12px; font-size: 12px;"
-                                                        onclick="productManager.updateStateFromUI('${flag.name}', '${flag.userType
-                                }', '${uniqueId}')">
+                                                        onclick="productManager.updateStateFromUI('${flag.name}', '${flag.userType}', '${uniqueId}')">
                                                         Update
                                                     </button>
                                                 </div>
                                             </td>
+                                            ` : ''}
                                         </tr>
                                     `;
                         })
