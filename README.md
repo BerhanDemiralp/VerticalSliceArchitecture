@@ -78,7 +78,7 @@ docker compose --profile prod up --build -d
 
 ### Products
 
-* `GET /api/products` — List products (with Redis cache)
+* `GET /api/products` — List products
 * `POST /api/products` — Create product
 * `POST /api/products/v2` — Create product V2
 * `PUT /api/products/{id}` — Update product
@@ -89,6 +89,3 @@ docker compose --profile prod up --build -d
 
 * `GET /api/flags` — Check all feature flags
 * `PUT /api/flags/{name}` — Update the existing new flag
-
-
-👉 Do you want me to also **add a real-world use case example** (like “rolling out a new payment system with a feature flag”) to the README so it feels more product-oriented?
