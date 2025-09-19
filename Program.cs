@@ -92,6 +92,7 @@ builder.Services.AddScoped<IFeatureFlagCache, FeatureFlagCacheService>();
 // Feature Flags
 builder.Services.AddScoped<UpdateFlagStatus.Handler>();
 builder.Services.AddScoped<GetAllFeatureFlags.Handler>();
+builder.Services.AddScoped<GetEffectiveForMe.Handler>();
 
 // Products
 builder.Services.AddScoped<GetAllProducts.Handler>();
@@ -158,7 +159,7 @@ using (var scope = app.Services.CreateScope())
     // Feature flags
     FeatureFlagInitializer.SeedFeatureFlags(db);
 
-    // --- Admin user seed ---
+    // Admin
     if (!await db.Users.AnyAsync(u => u.UserName == "admin"))
     {
         db.Users.Add(new VerticalSliceArchitecture.Domain.User
@@ -168,11 +169,32 @@ using (var scope = app.Services.CreateScope())
             Role = "Admin"
         });
         await db.SaveChangesAsync();
-        logger.LogInformation("Admin user seeded (admin / Admin@123).");
+        logger.LogInformation("Seeded admin (admin / Admin@123).");
     }
-    else
+
+    // Normal kullanýcýlar (rol: User)
+    if (!await db.Users.AnyAsync(u => u.UserName == "user"))
     {
-        logger.LogInformation("Admin user already exists, skipping seed.");
+        db.Users.Add(new VerticalSliceArchitecture.Domain.User
+        {
+            UserName = "user",
+            PasswordHash = hasher.Hash("User@123"),
+            Role = "User"
+        });
+        await db.SaveChangesAsync();
+        logger.LogInformation("Seeded user (user / User@123).");
+    }
+
+    if (!await db.Users.AnyAsync(u => u.UserName == "demo"))
+    {
+        db.Users.Add(new VerticalSliceArchitecture.Domain.User
+        {
+            UserName = "demo",
+            PasswordHash = hasher.Hash("Demo@123"),
+            Role = "User"
+        });
+        await db.SaveChangesAsync();
+        logger.LogInformation("Seeded user (demo / Demo@123).");
     }
 
     logger.LogInformation("Initial data added.");

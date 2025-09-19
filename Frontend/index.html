@@ -1,1168 +1,1644 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Product Management System</title>
     <style>
-      .show {
-        display: flex !important;
-      }
-
-      .hide {
-        display: none !important;
-      }
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        padding: 20px;
-      }
-
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-      }
-
-      .header {
-        background: linear-gradient(45deg, #2c3e50, #34495e);
-        color: white;
-        padding: 30px;
-        text-align: center;
-        position: relative;
-      }
-
-      .user-selector {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        display: flex;
-        gap: 10px;
-      }
-
-      .user-btn {
-        padding: 8px 16px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        background: transparent;
-        color: white;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-weight: 500;
-      }
-
-      .user-btn:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: translateY(-2px);
-      }
-
-      .user-btn.active {
-        background: white;
-        color: #2c3e50;
-        transform: scale(1.05);
-      }
-
-      .main-content {
-        padding: 30px;
-      }
-
-      .section {
-        margin-bottom: 40px;
-        background: #f8f9fa;
-        border-radius: 15px;
-        padding: 25px;
-        border: 1px solid #e9ecef;
-      }
-
-      .section-title {
-        font-size: 1.5em;
-        color: #2c3e50;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .section-title::before {
-        content: "";
-        width: 4px;
-        height: 25px;
-        background: linear-gradient(45deg, #667eea, #764ba2);
-        border-radius: 2px;
-      }
-
-      .actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-        margin-bottom: 25px;
-      }
-
-      .btn {
-        padding: 12px 24px;
-        border: none;
-        border-radius: 25px;
-        cursor: pointer;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-      }
-
-      .btn:active {
-        transform: translateY(0);
-      }
-
-      .btn-primary {
-        background: linear-gradient(45deg, #3498db, #2980b9);
-        color: white;
-      }
-
-      .btn-success {
-        background: linear-gradient(45deg, #27ae60, #219a52);
-        color: white;
-      }
-
-      .btn-warning {
-        background: linear-gradient(45deg, #f39c12, #e67e22);
-        color: white;
-      }
-
-      .btn-danger {
-        background: linear-gradient(45deg, #e74c3c, #c0392b);
-        color: white;
-      }
-
-      .btn-info {
-        background: linear-gradient(45deg, #1abc9c, #16a085);
-        color: white;
-      }
-
-      .btn:disabled {
-        background: #bdc3c7;
-        cursor: not-allowed;
-        transform: none;
-        opacity: 0.6;
-      }
-
-      .form-group {
-        margin-bottom: 20px;
-      }
-
-      .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: #2c3e50;
-      }
-
-      .form-group input,
-      .form-group select {
-        width: 100%;
-        padding: 12px;
-        border: 2px solid #e9ecef;
-        border-radius: 10px;
-        font-size: 14px;
-        transition: border-color 0.3s ease;
-      }
-
-      .form-group input:focus,
-      .form-group select:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-      }
-
-      .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-      }
-
-      .results {
-        background: white;
-        border-radius: 10px;
-        border: 2px solid #e9ecef;
-        max-height: 400px;
-        overflow-y: auto;
-      }
-
-      .product-card {
-        padding: 20px;
-        border-bottom: 1px solid #e9ecef;
-        transition: background-color 0.3s ease;
-      }
-
-      .product-card:hover {
-        background-color: #f8f9fa;
-      }
-
-      .product-card:last-child {
-        border-bottom: none;
-      }
-
-      .product-header {
-        display: flex;
-        justify-content: between;
-        align-items: center;
-        margin-bottom: 10px;
-      }
-
-      .product-name {
-        font-weight: bold;
-        color: #2c3e50;
-        font-size: 1.1em;
-      }
-
-      .product-price {
-        margin-left: 5px;
-        color: #27ae60;
-        font-weight: 600;
-        font-size: 1.2em;
-      }
-
-      .status {
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        font-weight: 500;
-      }
-
-      .status.success {
-        background: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-      }
-
-      .status.error {
-        background: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-      }
-
-      .loading {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        border: 3px solid #f3f3f3;
-        border-top: 3px solid #3498db;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
+        .show {
+            display: flex !important;
         }
-        100% {
-          transform: rotate(360deg);
+
+        .hide {
+            display: none !important;
         }
-      }
 
-      .hidden {
-        display: none !important;
-      }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-      .flag-table {
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      }
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-      .flag-table th,
-      .flag-table td {
-        padding: 15px;
-        text-align: left;
-        border-bottom: 1px solid #e9ecef;
-      }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
 
-      .flag-table th {
-        background: linear-gradient(45deg, #2c3e50, #34495e);
-        color: white;
-        font-weight: 600;
-      }
+        /* Login Panel Styles */
+        .login-panel {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
 
-      .flag-table tr:hover {
-        background-color: #f8f9fa;
-      }
+        .login-form {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 400px;
+            width: 100%;
+        }
 
-      .toggle-btn {
-        padding: 6px 12px;
-        border: none;
-        border-radius: 15px;
-        cursor: pointer;
-        font-size: 12px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-      }
+            .login-form h2 {
+                margin-bottom: 30px;
+                font-size: 2em;
+            }
 
-      .toggle-btn.enabled {
-        background: #27ae60;
-        color: white;
-      }
+            .login-form .form-group {
+                margin-bottom: 20px;
+                text-align: left;
+            }
 
-      .toggle-btn.disabled {
-        background: #e74c3c;
-        color: white;
-      }
+                .login-form .form-group label {
+                    display: block;
+                    margin-bottom: 8px;
+                    font-weight: 600;
+                }
 
-      @media (max-width: 768px) {
-        .form-row {
-          grid-template-columns: 1fr;
+                .login-form .form-group input {
+                    width: 100%;
+                    padding: 15px;
+                    border: 2px solid rgba(255, 255, 255, 0.3);
+                    border-radius: 10px;
+                    font-size: 16px;
+                    background: rgba(255, 255, 255, 0.1);
+                    color: white;
+                    transition: border-color 0.3s ease;
+                }
+
+                    .login-form .form-group input::placeholder {
+                        color: rgba(255, 255, 255, 0.7);
+                    }
+
+                    .login-form .form-group input:focus {
+                        outline: none;
+                        border-color: #667eea;
+                        background: rgba(255, 255, 255, 0.2);
+                    }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+            .login-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            }
+
+            .login-btn:disabled {
+                background: #bdc3c7;
+                cursor: not-allowed;
+                transform: none;
+                opacity: 0.6;
+            }
+
+        /* Main App Styles */
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
         .user-selector {
-          position: static;
-          margin-bottom: 20px;
-          justify-content: center;
+            display: flex;
+            gap: 10px;
         }
 
+        .user-btn {
+            padding: 8px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: transparent;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+            .user-btn:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: translateY(-2px);
+            }
+
+            .user-btn.active {
+                background: white;
+                color: #2c3e50;
+                transform: scale(1.05);
+            }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+            .logout-btn:hover {
+                background: #c0392b;
+                transform: translateY(-2px);
+            }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .section-title::before {
+                content: "";
+                width: 4px;
+                height: 25px;
+                background: linear-gradient(45deg, #667eea, #764ba2);
+                border-radius: 2px;
+            }
+
         .actions {
-          flex-direction: column;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         .btn {
-          width: 100%;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-      }
+
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            }
+
+            .btn:active {
+                transform: translateY(0);
+            }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #27ae60, #219a52);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #e74c4c, #c0392b);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #1abc9c, #16a085);
+            color: white;
+        }
+
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.6;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 600;
+                color: #2c3e50;
+            }
+
+            .form-group input,
+            .form-group select {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #e9ecef;
+                border-radius: 10px;
+                font-size: 14px;
+                transition: border-color 0.3s ease;
+            }
+
+                .form-group input:focus,
+                .form-group select:focus {
+                    outline: none;
+                    border-color: #667eea;
+                    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .results {
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .product-card {
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            transition: background-color 0.3s ease;
+        }
+
+            .product-card:hover {
+                background-color: #f8f9fa;
+            }
+
+            .product-card:last-child {
+                border-bottom: none;
+            }
+
+        .product-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .product-name {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .product-price {
+            margin-left: 5px;
+            color: #27ae60;
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+
+        .status {
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+            .status.success {
+                background: #d4edda;
+                color: #155724;
+                border: 1px solid #c3e6cb;
+            }
+
+            .status.error {
+                background: #f8d7da;
+                color: #721c24;
+                border: 1px solid #f5c6cb;
+            }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .flag-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+            .flag-table th,
+            .flag-table td {
+                padding: 15px;
+                text-align: left;
+                border-bottom: 1px solid #e9ecef;
+            }
+
+            .flag-table th {
+                background: linear-gradient(45deg, #2c3e50, #34495e);
+                color: white;
+                font-weight: 600;
+            }
+
+            .flag-table tr:hover {
+                background-color: #f8f9fa;
+            }
+
+        .toggle-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+            .toggle-btn.enabled {
+                background: #27ae60;
+                color: white;
+            }
+
+            .toggle-btn.disabled {
+                background: #e74c3c;
+                color: white;
+            }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .user-info {
+                position: static;
+                margin-bottom: 20px;
+                justify-content: center;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .user-selector {
+                justify-content: center;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <div class="user-selector">
-          <button class="user-btn active" data-user="admin">Admin</button>
-          <button class="user-btn" data-user="user">User</button>
-          <button class="user-btn" data-user="default">Default</button>
+</head>
+<body>
+    <div id="loginPanel" class="login-panel">
+        <div class="login-form">
+            <h2>Login</h2>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" placeholder="Enter your username" required />
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" placeholder="Enter your password" required />
+            </div>
+            <button id="loginBtn" class="login-btn">Login</button>
+            <div id="loginStatus" class="status hidden" style="margin-top: 20px;"></div>
         </div>
-        <h1>Product Management System</h1>
-        <p>Current User Type: <span id="currentUser">admin</span></p>
-      </div>
+    </div>
 
-      <div class="main-content">
-        <div id="status" class="status hidden"></div>
-
-        <!-- Product Management Section -->
-        <div class="section">
-          <div class="section-title">📦 Product Management</div>
-
-          <div class="actions">
-            <button id="getAllProductsBtn" class="btn btn-primary">
-              Get All Products
-            </button>
-            <button id="getProductByIdBtn" class="btn btn-info">
-              Get Product by ID
-            </button>
-            <button id="createProductBtn" class="btn btn-success">
-              Create Product
-            </button>
-            <button id="updateProductBtn" class="btn btn-warning">
-              Update Product
-            </button>
-            <button id="deleteProductBtn" class="btn btn-danger">
-              Delete Product
-            </button>
-          </div>
-
-          <!-- Create/Update Product Form -->
-          <div id="productForm" class="hidden">
-            <h3 id="formTitle">Create Product</h3>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="productName">Product Name:</label>
-                <input type="text" id="productName" required />
-              </div>
-              <div class="form-group">
-                <label for="productPrice">Price:</label>
-                <input type="number" id="productPrice" step="0.01" required />
-              </div>
+    <div id="mainApp" class="container hidden">
+        <div class="header">
+            <div class="user-info">
+                <div class="user-selector">
+                    <button class="user-btn active" data-user="admin">Admin</button>
+                    <button class="user-btn" data-user="user">User</button>
+                    <button class="user-btn" data-user="default">Default</button>
+                </div>
+                <button id="logoutBtn" class="logout-btn">Logout</button>
             </div>
-            <div class="form-group">
-              <label for="categoryId">Category ID (optional):</label>
-              <input type="number" id="categoryId" />
-            </div>
-            <div class="form-group">
-              <label for="productId" id="productIdLabel" class="hidden"
-                >Product ID:</label
-              >
-              <input type="number" id="productId" class="hidden" />
-            </div>
-            <button id="submitProductBtn" class="btn btn-success">
-              Create Product
-            </button>
-            <button
-              id="cancelFormBtn"
-              class="btn"
-              style="background: #95a5a6; color: white; margin-left: 10px"
-            >
-              Cancel
-            </button>
-          </div>
-
-          <!-- Get by ID Form -->
-          <div id="getByIdForm" class="hidden">
-            <div class="form-group">
-              <label for="searchProductId">Product ID:</label>
-              <input type="number" id="searchProductId" required />
-            </div>
-            <button id="searchProductBtn" class="btn btn-info">
-              Search Product
-            </button>
-            <button
-              id="cancelSearchBtn"
-              class="btn"
-              style="background: #95a5a6; color: white; margin-left: 10px"
-            >
-              Cancel
-            </button>
-          </div>
-
-          <!-- Delete Form -->
-          <div id="deleteForm" class="hidden">
-            <div class="form-group">
-              <label for="deleteProductId">Product ID to Delete:</label>
-              <input type="number" id="deleteProductId" required />
-            </div>
-            <button id="confirmDeleteBtn" class="btn btn-danger">
-              Confirm Delete
-            </button>
-            <button
-              id="cancelDeleteBtn"
-              class="btn"
-              style="background: #95a5a6; color: white; margin-left: 10px"
-            >
-              Cancel
-            </button>
-          </div>
-
-          <div id="productResults" class="results"></div>
+            <h1>Product Management System</h1>
+            <p>Current User Type: <span id="currentUser">admin</span></p>
+            <p>Logged in as: <span id="loggedInUser"></span></p>
         </div>
 
-        <!-- Feature Flags Section (Admin Only) -->
-        <div id="featureFlagsSection" class="section">
-          <div class="section-title">🚩 Feature Flags Management</div>
+        <div class="main-content">
+            <div id="status" class="status hidden"></div>
 
-          <div class="actions">
-            <button id="getAllFlagsBtn" class="btn btn-primary">
-              Get All Feature Flags
-            </button>
-          </div>
+            <div class="section">
+                <div class="section-title">📦 Product Management</div>
 
-          <div id="flagResults" class="results"></div>
+                <div class="actions">
+                    <button id="getAllProductsBtn" class="btn btn-primary">
+                        Get All Products
+                    </button>
+                    <button id="getProductByIdBtn" class="btn btn-info">
+                        Get Product by ID
+                    </button>
+                    <button id="createProductBtn" class="btn btn-success">
+                        Create Product
+                    </button>
+                    <button id="updateProductBtn" class="btn btn-warning">
+                        Update Product
+                    </button>
+                    <button id="deleteProductBtn" class="btn btn-danger">
+                        Delete Product
+                    </button>
+                </div>
+
+                <div id="productForm" class="hidden">
+                    <h3 id="formTitle">Create Product</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productName">Product Name:</label>
+                            <input type="text" id="productName" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="productPrice">Price:</label>
+                            <input type="number" id="productPrice" step="0.01" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoryId">Category ID (optional):</label>
+                        <input type="number" id="categoryId" />
+                    </div>
+                    <div class="form-group">
+                        <label for="productId" id="productIdLabel" class="hidden">Product ID:</label>
+                        <input type="number" id="productId" class="hidden" />
+                    </div>
+                    <button id="submitProductBtn" class="btn btn-success">
+                        Create Product
+                    </button>
+                    <button id="cancelFormBtn" class="btn" style="background: #95a5a6; color: white; margin-left: 10px">
+                        Cancel
+                    </button>
+                </div>
+
+                <div id="getByIdForm" class="hidden">
+                    <div class="form-group">
+                        <label for="searchProductId">Product ID:</label>
+                        <input type="number" id="searchProductId" required />
+                    </div>
+                    <button id="searchProductBtn" class="btn btn-info">
+                        Search Product
+                    </button>
+                    <button id="cancelSearchBtn" class="btn" style="background: #95a5a6; color: white; margin-left: 10px">
+                        Cancel
+                    </button>
+                </div>
+
+                <div id="deleteForm" class="hidden">
+                    <div class="form-group">
+                        <label for="deleteProductId">Product ID to Delete:</label>
+                        <input type="number" id="deleteProductId" required />
+                    </div>
+                    <button id="confirmDeleteBtn" class="btn btn-danger">
+                        Confirm Delete
+                    </button>
+                    <button id="cancelDeleteBtn" class="btn" style="background: #95a5a6; color: white; margin-left: 10px">
+                        Cancel
+                    </button>
+                </div>
+
+                <div id="productResults" class="results"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">📂 Category Management</div>
+
+                <div class="actions">
+                    <button id="getAllCategoriesBtn" class="btn btn-primary">
+                        Get All Categories
+                    </button>
+                    <button id="getCategoryByIdBtn" class="btn btn-info">
+                        Get Category by ID
+                    </button>
+                    <button id="createCategoryBtn" class="btn btn-success">
+                        Create Category
+                    </button>
+                    <button id="updateCategoryBtn" class="btn btn-warning">
+                        Update Category
+                    </button>
+                    <button id="deleteCategoryBtn" class="btn btn-danger">
+                        Delete Category
+                    </button>
+                </div>
+
+                <div id="categoryForm" class="hidden">
+                    <h3 id="categoryFormTitle">Create Category</h3>
+                    <div class="form-group">
+                        <label for="categoryName">Category Name:</label>
+                        <input type="text" id="categoryName" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="updateCategoryId" id="updateCategoryIdLabel" class="hidden">Category ID:</label>
+                        <input type="number" id="updateCategoryId" class="hidden" />
+                    </div>
+                    <button id="submitCategoryBtn" class="btn btn-success">
+                        Create Category
+                    </button>
+                    <button id="cancelCategoryFormBtn" class="btn" style="background: #95a5a6; color: white; margin-left: 10px">
+                        Cancel
+                    </button>
+                </div>
+
+                <div id="getCategoryByIdForm" class="hidden">
+                    <div class="form-group">
+                        <label for="searchCategoryId">Category ID:</label>
+                        <input type="number" id="searchCategoryId" required />
+                    </div>
+                    <button id="searchCategoryBtn" class="btn btn-info">
+                        Search Category
+                    </button>
+                    <button id="cancelCategorySearchBtn" class="btn" style="background: #95a5a6; color: white; margin-left: 10px">
+                        Cancel
+                    </button>
+                </div>
+
+                <div id="deleteCategoryForm" class="hidden">
+                    <div class="form-group">
+                        <label for="deleteCategoryId">Category ID to Delete:</label>
+                        <input type="number" id="deleteCategoryId" required />
+                    </div>
+                    <button id="confirmDeleteCategoryBtn" class="btn btn-danger">
+                        Confirm Delete
+                    </button>
+                    <button id="cancelDeleteCategoryBtn" class="btn" style="background: #95a5a6; color: white; margin-left: 10px">
+                        Cancel
+                    </button>
+                </div>
+
+                <div id="categoryResults" class="results"></div>
+            </div>
+
+            <div id="featureFlagsSection" class="section">
+                <div class="section-title">🚩 Feature Flags Management</div>
+
+                <div class="actions">
+                    <button id="getAllFlagsBtn" class="btn btn-primary">
+                        Get All Feature Flags
+                    </button>
+                    <button id="getMyFeaturesBtn" class="btn btn-info">
+                        Get My Features
+                    </button>
+                </div>
+
+                <div id="flagResults" class="results"></div>
+            </div>
         </div>
-      </div>
     </div>
 
     <script>
-      class ProductManager {
-        constructor() {
-          this.possibleUrls = ["http://localhost:5000/api"];
-          this.baseUrl = this.possibleUrls[0];
-          this.currentUser = "admin";
-          this.featureFlags = {};
-          this.init();
-        }
-
-        init() {
-          this.bindEvents();
-          this.detectBackendUrl().then(() => {
-            this.switchUser("admin");
-          });
-        }
-
-        async detectBackendUrl() {
-          console.log("🔍 Detecting backend URL...");
-          for (const url of this.possibleUrls) {
-            try {
-              console.log(`Trying: ${url}`);
-              const response = await fetch(`${url}/products`, {
-                method: "GET",
-                headers: {
-                  "User-Type": "admin",
-                  "Content-Type": "application/json",
-                },
-              });
-              if (response.status !== 0) {
-                this.baseUrl = url;
-                console.log(`✅ Backend detected at: ${url}`);
-                this.showStatus(`Connected to backend: ${url}`, "success");
-                return;
-              }
-            } catch (error) {
-              console.log(`❌ Failed to connect to: ${url} - ${error.message}`);
+        class ProductManager {
+            constructor() {
+                this.possibleUrls = ["http://localhost:5000/api"];
+                this.baseUrl = this.possibleUrls[0];
+                this.currentUser = "admin";
+                this.featureFlags = {};
+                this.authToken = null;
+                this.loggedInUsername = null;
+                this.init();
             }
-          }
-          this.showConfigurationHelp();
-        }
 
-        showConfigurationHelp() {
-          const helpMessage = `
-            <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; padding: 20px; margin: 20px 0;">
-                <h3>🔧 Backend Configuration Needed</h3>
-                <p><strong>Cannot connect to your ASP.NET backend.</strong></p>
-                <h4>Common solutions:</h4>
-                <ol>
-                    <li><strong>If using ASP.NET Core backend:</strong>
-                        <ul>
-                            <li>HTTP: <code>http://localhost:5000</code></li>
-                            <li>HTTPS: <code>https://localhost:5001</code></li>
-                            <li>Add CORS configuration (see below)</li>
-                        </ul>
-                    </li>
-                    <li><strong>If using Python server (port 8000):</strong>
-                        <ul>
-                            <li>Make sure your ASP.NET backend is running on: <code>http://localhost:8000</code></li>
-                            <li>Or start it with: <code>dotnet run --urls="http://localhost:8000"</code></li>
-                        </ul>
-                    </li>
-                    <li><strong>Enable CORS in your ASP.NET backend:</strong>
-                        <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto;">
+            init() {
+                this.bindEvents();
+                this.checkAuthToken();
+            }
+
+            checkAuthToken() {
+                const token = localStorage.getItem('authToken');
+                const username = localStorage.getItem('username');
+                const userRole = localStorage.getItem('userRole');
+
+                if (token && username && userRole) {
+                    this.authToken = token;
+                    this.loggedInUsername = username;
+                    this.userRole = userRole;
+                    this.showMainApp();
+                } else {
+                    this.showLoginPanel();
+                }
+            }
+
+            showLoginPanel() {
+                document.getElementById('loginPanel').classList.remove('hidden');
+                document.getElementById('mainApp').classList.add('hidden');
+            }
+
+            showMainApp() {
+                document.getElementById('loginPanel').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('loggedInUser').textContent = this.loggedInUsername;
+
+                this.detectBackendUrl().then(() => {
+                    this.setupRoleBasedUI();
+                });
+            }
+
+            setupRoleBasedUI() {
+                const userSelector = document.querySelector('.user-selector');
+                const currentUserSpan = document.getElementById('currentUser');
+                const loggedInUserRole = this.userRole.toLowerCase();
+
+                // Always hide the user selector to prevent role switching, as requested
+                userSelector.style.display = 'none';
+
+                // Set the current user and display the logged-in role
+                currentUserSpan.textContent = loggedInUserRole;
+                this.currentUser = loggedInUserRole;
+
+                // Show the feature flags section but hide the 'Get All Flags' button for non-admins.
+                const getAllFlagsBtn = document.getElementById('getAllFlagsBtn');
+                if (loggedInUserRole !== 'admin') {
+                    getAllFlagsBtn.classList.add('hidden');
+                } else {
+                    getAllFlagsBtn.classList.remove('hidden');
+                }
+
+                // Load feature flags based on the logged-in user's role
+                this.getAndStoreFeatureFlags();
+            }
+
+            async login() {
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
+
+                if (!username || !password) {
+                    this.showLoginStatus('Please enter both username and password', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${this.baseUrl}/auth/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            userName: username,
+                            password: password
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.authToken = data.access_token;
+                        this.loggedInUsername = username;
+
+                        // Decode JWT to get user role
+                        const payload = JSON.parse(atob(this.authToken.split('.')[1]));
+                        this.userRole = payload.role || payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || 'user';
+
+                        // Store in localStorage
+                        localStorage.setItem('authToken', this.authToken);
+                        localStorage.setItem('username', username);
+                        localStorage.setItem('userRole', this.userRole);
+
+                        this.showLoginStatus('Login successful!', 'success');
+                        setTimeout(() => {
+                            this.showMainApp();
+                        }, 1000);
+                    } else if (response.status === 401) {
+                        this.showLoginStatus('Invalid username or password', 'error');
+                    } else {
+                        const errorData = await response.json();
+                        this.showLoginStatus(errorData.error || 'Login failed', 'error');
+                    }
+                } catch (error) {
+                    this.showLoginStatus(`Login error: ${error.message}`, 'error');
+                }
+            }
+
+            logout() {
+                this.authToken = null;
+                this.loggedInUsername = null;
+                this.userRole = null;
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('username');
+                localStorage.removeItem('userRole');
+
+                // Clear form fields
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+
+                this.showLoginPanel();
+            }
+
+            showLoginStatus(message, type = 'success') {
+                const status = document.getElementById('loginStatus');
+                status.textContent = message;
+                status.className = `status ${type}`;
+                status.classList.remove('hidden');
+
+                setTimeout(() => {
+                    status.classList.add('hidden');
+                }, 5000);
+            }
+
+            async detectBackendUrl() {
+                console.log('🔍 Detecting backend URL...');
+                for (const url of this.possibleUrls) {
+                    try {
+                        console.log(`Trying: ${url}`);
+                        const response = await fetch(`${url}/products`, {
+                            method: 'GET',
+                            headers: {
+                                'User-Type': 'admin',
+                                'Content-Type': 'application/json',
+                                ...(this.authToken && { 'Authorization': `Bearer ${this.authToken}` })
+                            },
+                        });
+                        if (response.status !== 0) {
+                            this.baseUrl = url;
+                            console.log(`✅ Backend detected at: ${url}`);
+                            this.showStatus(`Connected to backend: ${url}`, 'success');
+                            return;
+                        }
+                    } catch (error) {
+                        console.log(`❌ Failed to connect to: ${url} - ${error.message}`);
+                    }
+                }
+                this.showConfigurationHelp();
+            }
+
+            showConfigurationHelp() {
+                const helpMessage = `
+                    <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; padding: 20px; margin: 20px 0;">
+                        <h3>🔧 Backend Configuration Needed</h3>
+                        <p><strong>Cannot connect to your ASP.NET backend.</strong></p>
+                        <h4>Common solutions:</h4>
+                        <ol>
+                            <li><strong>If using ASP.NET Core backend:</strong>
+                                <ul>
+                                    <li>HTTP: <code>http://localhost:5000</code></li>
+                                    <li>HTTPS: <code>https://localhost:5001</code></li>
+                                    <li>Add CORS configuration (see below)</li>
+                                </ul>
+                            </li>
+                            <li><strong>Enable CORS in your ASP.NET backend:</strong>
+                                <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto;">
 // In Program.cs or Startup.cs
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", builder =>
-    {
-        builder.AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-    });
+            options.AddPolicy("AllowFrontend", builder =>
+            {
+                builder.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+            });
 });
 
 // After building the app
 app.UseCors("AllowFrontend");
-                        </pre>
-                    </li>
-                    <li><strong>Make sure your backend is running</strong></li>
-                    <li><strong>Update the URL below if different:</strong>
-                        <input type="text" id="customUrl" placeholder="http://localhost:5000/api" style="width: 300px; padding: 8px; margin: 5px;">
-                        <button onclick="productManager.setCustomUrl()" class="btn btn-primary" style="padding: 8px 16px;">Test Connection</button>
-                    </li>
-                </ol>
-            </div>
-        `;
-          document.getElementById("productResults").innerHTML = helpMessage;
-          this.showStatus(
-            "Backend connection failed. Check configuration above.",
-            "error"
-          );
-        }
+                                </pre>
+                            </li>
+                            <li><strong>Make sure your backend is running</strong></li>
+                            <li><strong>Update the URL below if different:</strong>
+                                <input type="text" id="customUrl" placeholder="http://localhost:5000/api" style="width: 300px; padding: 8px; margin: 5px;">
+                                <button onclick="productManager.setCustomUrl()" class="btn btn-primary" style="padding: 8px 16px;">Test Connection</button>
+                            </li>
+                        </ol>
+                    </div>
+                `;
+                document.getElementById('productResults').innerHTML = helpMessage;
+                this.showStatus('Backend connection failed. Check configuration above.', 'error');
+            }
 
-        async setCustomUrl() {
-          const customUrl = document.getElementById("customUrl").value.trim();
-          if (!customUrl) {
-            this.showStatus("Please enter a URL", "error");
-            return;
-          }
-          const url = customUrl.endsWith("/api")
-            ? customUrl
-            : `${customUrl}/api`;
-          try {
-            const response = await fetch(`${url}/products`, {
-              method: "GET",
-              headers: {
-                "User-Type": "admin",
-                "Content-Type": "application/json",
-              },
-            });
-            this.baseUrl = url;
-            this.showStatus(`✅ Connected to: ${url}`, "success");
-            document.getElementById("productResults").innerHTML = "";
-            this.switchUser("admin");
-          } catch (error) {
-            this.showStatus(
-              `❌ Failed to connect to: ${url} - ${error.message}`,
-              "error"
-            );
-          }
-        }
-
-        bindEvents() {
-          document.querySelectorAll(".user-btn").forEach((btn) => {
-            btn.addEventListener("click", (e) => {
-              this.switchUser(e.target.dataset.user);
-            });
-          });
-          document
-            .getElementById("getAllProductsBtn")
-            .addEventListener("click", () => this.getAllProducts());
-          document
-            .getElementById("getProductByIdBtn")
-            .addEventListener("click", () => this.showGetByIdForm());
-          document
-            .getElementById("createProductBtn")
-            .addEventListener("click", () => this.showCreateForm());
-          document
-            .getElementById("updateProductBtn")
-            .addEventListener("click", () => this.showUpdateForm());
-          document
-            .getElementById("deleteProductBtn")
-            .addEventListener("click", () => this.showDeleteForm());
-          document
-            .getElementById("submitProductBtn")
-            .addEventListener("click", () => this.submitProduct());
-          document
-            .getElementById("cancelFormBtn")
-            .addEventListener("click", () => this.hideAllForms());
-          document
-            .getElementById("searchProductBtn")
-            .addEventListener("click", () => this.searchProduct());
-          document
-            .getElementById("cancelSearchBtn")
-            .addEventListener("click", () => this.hideAllForms());
-          document
-            .getElementById("confirmDeleteBtn")
-            .addEventListener("click", () => this.deleteProduct());
-          document
-            .getElementById("cancelDeleteBtn")
-            .addEventListener("click", () => this.hideAllForms());
-          document
-            .getElementById("getAllFlagsBtn")
-            .addEventListener("click", () => this.getAllFlags());
-        }
-
-        async switchUser(userType) {
-          this.currentUser = userType;
-          document.getElementById("currentUser").textContent = userType;
-          document
-            .querySelectorAll(".user-btn")
-            .forEach((btn) => btn.classList.remove("active"));
-          document
-            .querySelector(`[data-user="${userType}"]`)
-            .classList.add("active");
-          const flagsSection = document.getElementById("featureFlagsSection");
-          if (userType === "admin") {
-            flagsSection.classList.remove("hidden");
-          } else {
-            flagsSection.classList.add("hidden");
-          }
-          await this.getAndStoreFeatureFlags();
-          this.hideAllForms();
-          this.clearResults();
-        }
-
-        async getAndStoreFeatureFlags() {
-          console.log(
-            `🔐 Checking feature flags for user: ${this.currentUser}`
-          );
-          try {
-            const response = await fetch(`${this.baseUrl}/flags`, {
-              method: "GET",
-              headers: {
-                "User-Type": "admin",
-              },
-            });
-
-            if (response.ok) {
-              const flags = await response.json();
-              this.featureFlags = {};
-              flags.forEach((flag) => {
-                if (flag.userType === "default") {
-                  this.featureFlags[flag.name] = {
-                    isEnabled: flag.isEnabled,
-                    state: flag.state,
-                  };
+            async setCustomUrl() {
+                const customUrl = document.getElementById('customUrl').value.trim();
+                if (!customUrl) {
+                    this.showStatus('Please enter a URL', 'error');
+                    return;
                 }
-              });
-              flags.forEach((flag) => {
-                if (flag.userType === this.currentUser) {
-                  this.featureFlags[flag.name] = {
-                    isEnabled: flag.isEnabled,
-                    state: flag.state,
-                  };
-                }
-              });
-              this.updateButtonVisibility();
-            } else if (response.status === 401) {
-              this.featureFlags = {};
-              this.showStatus(
-                "You are not authorized to view feature flags.",
-                "error"
-              );
-              this.updateButtonVisibility();
-            } else {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-          } catch (error) {
-            console.error("Error fetching feature flags:", error);
-            this.showStatus(
-              `Error fetching feature flags: ${error.message}`,
-              "error"
-            );
-            this.featureFlags = {};
-            this.updateButtonVisibility();
-          }
-        }
-
-        updateButtonVisibility() {
-          const buttonMap = {
-            GetAllProductsEnabled: "getAllProductsBtn",
-            GetProductByIdEnabled: "getProductByIdBtn",
-            CreateProductEnabled: "createProductBtn",
-            UpdateProductEnabled: "updateProductBtn",
-            DeleteProductEnabled: "deleteProductBtn",
-          };
-          Object.entries(buttonMap).forEach(([feature, buttonId]) => {
-            const button = document.getElementById(buttonId);
-            const isEnabled = this.featureFlags[feature]?.isEnabled;
-            if (button) {
-              if (isEnabled) {
-                button.style.display = "inline-block";
-                button.disabled = false;
-              } else {
-                button.style.display = "none";
-                button.disabled = true;
-              }
-            }
-          });
-        }
-
-        async makeRequest(url, options = {}) {
-          const defaultHeaders = {
-            "Content-Type": "application/json",
-            "User-Type": this.currentUser,
-          };
-          const config = {
-            ...options,
-            headers: {
-              ...defaultHeaders,
-              ...options.headers,
-            },
-          };
-          try {
-            const response = await fetch(url, config);
-
-            if (response.status === 401) {
-              this.showStatus(
-                "This feature is disabled or not authorized for your user type.",
-                "error"
-              );
-              this.clearResults();
-              return null;
-            }
-
-            if (!response.ok) {
-              let errorMessage = `HTTP error! status: ${response.status}`;
-              const contentType = response.headers.get("content-type");
-
-              if (contentType && contentType.includes("application/json")) {
+                const url = customUrl.endsWith('/api') ? customUrl : `${customUrl}/api`;
                 try {
-                  const errorData = await response.json();
-                  if (errorData.error) {
-                    errorMessage = errorData.error;
-                  } else if (errorData.message) {
-                    errorMessage = errorData.message;
-                  } else if (errorData.Error) {
-                    errorMessage = errorData.Error;
-                  }
-                } catch (e) {
-                  console.error("Failed to parse JSON error: ", e);
+                    const response = await fetch(`${url}/products`, {
+                        method: 'GET',
+                        headers: {
+                            'User-Type': 'admin',
+                            'Content-Type': 'application/json',
+                            ...(this.authToken && { 'Authorization': `Bearer ${this.authToken}` })
+                        },
+                    });
+                    this.baseUrl = url;
+                    this.showStatus(`✅ Connected to: ${url}`, 'success');
+                    document.getElementById('productResults').innerHTML = '';
+                    this.setupRoleBasedUI();
+                } catch (error) {
+                    this.showStatus(`❌ Failed to connect to: ${url} - ${error.message}`, 'error');
                 }
-              }
-              throw new Error(errorMessage);
             }
 
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-              return await response.json();
+            bindEvents() {
+                // Login events
+                document.getElementById('loginBtn').addEventListener('click', () => this.login());
+                document.getElementById('password').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.login();
+                    }
+                });
+                document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
+
+                // Product events
+                document.getElementById('getAllProductsBtn').addEventListener('click', () => this.getAllProducts());
+                document.getElementById('getProductByIdBtn').addEventListener('click', () => this.showGetByIdForm());
+                document.getElementById('createProductBtn').addEventListener('click', () => this.showCreateForm());
+                document.getElementById('updateProductBtn').addEventListener('click', () => this.showUpdateForm());
+                document.getElementById('deleteProductBtn').addEventListener('click', () => this.showDeleteForm());
+                document.getElementById('submitProductBtn').addEventListener('click', () => this.submitProduct());
+                document.getElementById('cancelFormBtn').addEventListener('click', () => this.hideAllForms());
+                document.getElementById('searchProductBtn').addEventListener('click', () => this.searchProduct());
+                document.getElementById('cancelSearchBtn').addEventListener('click', () => this.hideAllForms());
+                document.getElementById('confirmDeleteBtn').addEventListener('click', () => this.deleteProduct());
+                document.getElementById('cancelDeleteBtn').addEventListener('click', () => this.hideAllForms());
+
+                // Category events
+                document.getElementById('getAllCategoriesBtn').addEventListener('click', () => this.getAllCategories());
+                document.getElementById('getCategoryByIdBtn').addEventListener('click', () => this.showGetCategoryByIdForm());
+                document.getElementById('createCategoryBtn').addEventListener('click', () => this.showCreateCategoryForm());
+                document.getElementById('updateCategoryBtn').addEventListener('click', () => this.showUpdateCategoryForm());
+                document.getElementById('deleteCategoryBtn').addEventListener('click', () => this.showDeleteCategoryForm());
+                document.getElementById('submitCategoryBtn').addEventListener('click', () => this.submitCategory());
+                document.getElementById('cancelCategoryFormBtn').addEventListener('click', () => this.hideAllForms());
+                document.getElementById('searchCategoryBtn').addEventListener('click', () => this.searchCategory());
+                document.getElementById('cancelCategorySearchBtn').addEventListener('click', () => this.hideAllForms());
+                document.getElementById('confirmDeleteCategoryBtn').addEventListener('click', () => this.deleteCategory());
+                document.getElementById('cancelDeleteCategoryBtn').addEventListener('click', () => this.hideAllForms());
+
+                // Feature flag events
+                document.getElementById('getAllFlagsBtn').addEventListener('click', () => this.getAllFlags());
+                document.getElementById('getMyFeaturesBtn').addEventListener('click', () => this.getMyFeatures());
             }
-            return response;
-          } catch (error) {
-            this.showStatus(`Error: ${error.message}`, "error");
-            this.clearResults();
-            return null;
-          }
-        }
 
-        showStatus(message, type = "success") {
-          const status = document.getElementById("status");
-          status.textContent = message;
-          status.className = `status ${type}`;
-          status.classList.remove("hidden");
-          setTimeout(() => {
-            status.classList.add("hidden");
-          }, 5000);
-        }
+            async switchUser(userType) {
+                // This function is no longer called from the UI, but the logic is kept
+                // in case it's needed for other parts of the application.
+                // The user selector is now always hidden to prevent switching.
+                if (this.userRole && this.userRole.toLowerCase() !== 'admin') {
+                    return;
+                }
 
-        hideAllForms() {
-          document.getElementById("productForm").classList.add("hidden");
-          document.getElementById("getByIdForm").classList.add("hidden");
-          document.getElementById("deleteForm").classList.add("hidden");
-        }
+                this.currentUser = userType;
+                document.getElementById('currentUser').textContent = userType;
+                document.querySelectorAll('.user-btn').forEach((btn) => btn.classList.remove('active'));
+                document.querySelector(`[data-user="${userType}"]`).classList.add('active');
 
-        clearResults() {
-          document.getElementById("productResults").innerHTML = "";
-          document.getElementById("flagResults").innerHTML = "";
-        }
+                const flagsSection = document.getElementById('featureFlagsSection');
+                if (userType === 'admin') {
+                    flagsSection.classList.remove('hidden');
+                } else {
+                    flagsSection.classList.add('hidden');
+                }
 
-        async getAllProducts() {
-          this.hideAllForms();
-          this.clearResults();
-          const data = await this.makeRequest(`${this.baseUrl}/products`);
-          if (data && data.items) {
-            this.displayProducts(data.items);
-            this.showStatus("Products loaded successfully!");
-          } else {
-            console.error("Couldn't get data in the expected format: ", data);
-            this.showStatus("Couldn't get the expected product data.", "error");
-          }
-        }
-
-        showGetByIdForm() {
-          this.hideAllForms();
-          this.clearResults();
-          document.getElementById("getByIdForm").classList.remove("hidden");
-        }
-
-        async searchProduct() {
-          const id = document.getElementById("searchProductId").value;
-          if (!id) {
-            this.showStatus("Please enter a product ID", "error");
-            return;
-          }
-          const data = await this.makeRequest(`${this.baseUrl}/products/${id}`);
-          if (data) {
-            this.displayProducts([data]);
-            this.showStatus("Product found!");
-            this.hideAllForms();
-          }
-        }
-
-        showCreateForm() {
-          this.hideAllForms();
-          this.clearResults();
-          document.getElementById("formTitle").textContent = "Create Product";
-          document.getElementById("submitProductBtn").textContent =
-            "Create Product";
-          document.getElementById("productIdLabel").classList.add("hidden");
-          document.getElementById("productId").classList.add("hidden");
-          this.clearProductForm();
-          document.getElementById("productForm").classList.remove("hidden");
-        }
-
-        showUpdateForm() {
-          this.hideAllForms();
-          this.clearResults();
-          this.getAllProducts();
-          document.getElementById("formTitle").textContent = "Update Product";
-          document.getElementById("submitProductBtn").textContent =
-            "Update Product";
-          document.getElementById("productIdLabel").classList.remove("hidden");
-          document.getElementById("productId").classList.remove("hidden");
-          this.clearProductForm();
-          document.getElementById("productForm").classList.remove("hidden");
-        }
-
-        showDeleteForm() {
-          this.hideAllForms();
-          this.clearResults();
-          this.getAllProducts();
-          document.getElementById("deleteForm").classList.remove("hidden");
-        }
-
-        async submitProduct() {
-          const name = document.getElementById("productName").value;
-          const price = parseFloat(
-            document.getElementById("productPrice").value
-          );
-          const categoryId = document.getElementById("categoryId").value;
-          const productId = document.getElementById("productId").value;
-
-          if (!name || !price) {
-            this.showStatus("Please fill in all required fields", "error");
-            return;
-          }
-          const productData = {
-            name,
-            price,
-            categoryId: categoryId ? parseInt(categoryId) : null,
-          };
-
-          let url, method;
-          if (productId) {
-            const updateFlag = this.featureFlags["UpdateProductEnabled"];
-            if (updateFlag && updateFlag.state) {
-              url = `${this.baseUrl}/products/${createFlag.state}/${productId}`;
-            } else {
-              url = `${this.baseUrl}/products/${productId}`;
+                await this.getAndStoreFeatureFlags();
+                this.hideAllForms();
+                this.clearResults();
             }
-            method = "PUT";
-          } else {
-            const createFlag = this.featureFlags["CreateProductEnabled"];
-            if (createFlag && createFlag.state) {
-              url = `${this.baseUrl}/products/${createFlag.state}`;
-            } else {
-              url = `${this.baseUrl}/products`;
+
+            async getAndStoreFeatureFlags() {
+                console.log(`🔐 Checking feature flags for user: ${this.currentUser}`);
+                try {
+                    // For logged in users, use the /api/me/features endpoint
+                    if (this.authToken) {
+                        const response = await fetch(`${this.baseUrl}/me/features`, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${this.authToken}`,
+                                'User-Type': this.currentUser,
+                                'Content-Type': 'application/json',
+                            },
+                        });
+
+                        if (response.ok) {
+                            const flags = await response.json();
+                            this.featureFlags = {};
+                            flags.forEach((flag) => {
+                                this.featureFlags[flag.name] = {
+                                    isEnabled: flag.isEnabled,
+                                    state: flag.state,
+                                };
+                            });
+                            this.updateButtonVisibility();
+                            return;
+                        }
+                    }
+
+                    // Fallback to admin flags endpoint (for backwards compatibility)
+                    const response = await fetch(`${this.baseUrl}/flags`, {
+                        method: 'GET',
+                        headers: {
+                            'User-Type': 'admin',
+                            'Content-Type': 'application/json',
+                            ...(this.authToken && { 'Authorization': `Bearer ${this.authToken}` })
+                        },
+                    });
+
+                    if (response.ok) {
+                        const flags = await response.json();
+                        this.featureFlags = {};
+                        flags.forEach((flag) => {
+                            if (flag.userType === 'default') {
+                                this.featureFlags[flag.name] = {
+                                    isEnabled: flag.isEnabled,
+                                    state: flag.state,
+                                };
+                            }
+                        });
+                        flags.forEach((flag) => {
+                            if (flag.userType === this.currentUser) {
+                                this.featureFlags[flag.name] = {
+                                    isEnabled: flag.isEnabled,
+                                    state: flag.state,
+                                };
+                            }
+                        });
+                        this.updateButtonVisibility();
+                    } else if (response.status === 401 || response.status === 403) {
+                        this.featureFlags = {};
+                        this.showStatus('You are not authorized to view feature flags.', 'error');
+                        this.updateButtonVisibility();
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error('Error fetching feature flags:', error);
+                    this.showStatus(`Error fetching feature flags: ${error.message}`, 'error');
+                    this.featureFlags = {};
+                    this.updateButtonVisibility();
+                }
             }
-            method = "POST";
-          }
 
-          const data = await this.makeRequest(url, {
-            method,
-            body: JSON.stringify(productData),
-          });
-          if (data) {
-            this.showStatus(
-              `Product ${productId ? "updated" : "created"} successfully!`
-            );
-            this.hideAllForms();
-            this.clearProductForm();
-            this.displayProducts([data]);
-          }
-        }
-
-        async deleteProduct() {
-          const id = document.getElementById("deleteProductId").value;
-          if (!id) {
-            this.showStatus("Please enter a product ID", "error");
-            return;
-          }
-          const response = await this.makeRequest(
-            `${this.baseUrl}/products/${id}`,
-            {
-              method: "DELETE",
+            updateButtonVisibility() {
+                const buttonMap = {
+                    GetAllProductsEnabled: 'getAllProductsBtn',
+                    GetProductByIdEnabled: 'getProductByIdBtn',
+                    CreateProductEnabled: 'createProductBtn',
+                    UpdateProductEnabled: 'updateProductBtn',
+                    DeleteProductEnabled: 'deleteProductBtn',
+                };
+                Object.entries(buttonMap).forEach(([feature, buttonId]) => {
+                    const button = document.getElementById(buttonId);
+                    const isEnabled = this.featureFlags[feature]?.isEnabled;
+                    if (button) {
+                        if (isEnabled) {
+                            button.style.display = 'inline-block';
+                            button.disabled = false;
+                        } else {
+                            button.style.display = 'none';
+                            button.disabled = true;
+                        }
+                    }
+                });
             }
-          );
-          if (response !== null) {
-            this.showStatus("Product deleted successfully!");
-            this.hideAllForms();
-          }
-        }
 
-        clearProductForm() {
-          document.getElementById("productName").value = "";
-          document.getElementById("productPrice").value = "";
-          document.getElementById("categoryId").value = "";
-          document.getElementById("productId").value = "";
-        }
+            async makeRequest(url, options = {}) {
+                const defaultHeaders = {
+                    'Content-Type': 'application/json',
+                    'User-Type': this.currentUser,
+                    ...(this.authToken && { 'Authorization': `Bearer ${this.authToken}` })
+                };
+                const config = {
+                    ...options,
+                    headers: {
+                        ...defaultHeaders,
+                        ...options.headers,
+                    },
+                };
+                try {
+                    const response = await fetch(url, config);
 
-        displayProducts(products) {
-          const container = document.getElementById("productResults");
-          if (!products || products.length === 0) {
-            container.innerHTML =
-              '<div class="product-card">No products found</div>';
-            return;
-          }
-          container.innerHTML = products
-            .map(
-              (product) => `
-                        <div class="product-card">
-                            <div class="product-header">
-                                <span class="product-name">${
-                                  product.name
-                                }</span>
-                                </>
-                                <span class="product-price">$${
-                                  product.price
-                                }</span>
-                            </div>
-                            <div>ID: ${product.id}</div>
-                            <div>Category ID: ${
-                              product.categoryId || "None"
-                            }</div>
-                        </div>
-                    `
-            )
-            .join("");
-        }
+                    if (response.status === 401) {
+                        this.showStatus('Authentication required. Please login again.', 'error');
+                        this.logout();
+                        return null;
+                    }
 
-        async getAllFlags() {
-          const data = await this.makeRequest(`${this.baseUrl}/flags`);
-          if (data) {
-            this.displayFlags(data);
-            this.showStatus("Feature flags loaded successfully!");
-          }
-        }
+                    if (response.status === 403) {
+                        this.showStatus('This feature is disabled or not authorized for your user type.', 'error');
+                        this.clearResults();
+                        return null;
+                    }
 
-        async updateFlagStatus(name, userType, isEnabled, state) {
-          console.log(`📡 Updating flag: ${name} for ${userType}`);
+                    if (!response.ok) {
+                        let errorMessage = `HTTP error! status: ${response.status}`;
+                        const contentType = response.headers.get('content-type');
 
-          const requestBody = {
-            isEnabled: isEnabled,
-            state: state,
-            userType: userType,
-          };
+                        if (contentType && contentType.includes('application/json')) {
+                            try {
+                                const errorData = await response.json();
+                                if (errorData.error) {
+                                    errorMessage = errorData.error;
+                                } else if (errorData.message) {
+                                    errorMessage = errorData.message;
+                                } else if (errorData.Error) {
+                                    errorMessage = errorData.Error;
+                                }
+                            } catch (e) {
+                                console.error('Failed to parse JSON error: ', e);
+                            }
+                        }
+                        throw new Error(errorMessage);
+                    }
 
-          try {
-            const response = await fetch(`${this.baseUrl}/flags/${name}`, {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-                "User-Type": this.currentUser,
-              },
-              body: JSON.stringify(requestBody),
-            });
-
-            if (response.ok) {
-              this.showStatus(
-                `Flag '${name}' updated successfully!`,
-                "success"
-              );
-              await this.getAndStoreFeatureFlags();
-              await this.getAllFlags();
-            } else if (response.status === 404) {
-              this.showStatus("Flag not found!", "error");
-            } else {
-              const errorText = await response.text();
-              throw new Error(
-                `HTTP error! status: ${response.status}, message: ${errorText}`
-              );
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return await response.json();
+                    }
+                    return response;
+                } catch (error) {
+                    this.showStatus(`Error: ${error.message}`, 'error');
+                    this.clearResults();
+                    return null;
+                }
             }
-          } catch (error) {
-            console.error("Update failed:", error);
-            this.showStatus(`Failed to update flag: ${error.message}`, "error");
-          }
-        }
 
-        async updateStateFromUI(flagName, userType, uniqueId) {
-          const new_state_value = document
-            .getElementById(`state-input-${uniqueId}`)
-            .value.trim();
+            showStatus(message, type = 'success') {
+                const status = document.getElementById('status');
+                status.textContent = message;
+                status.className = `status ${type}`;
+                status.classList.remove('hidden');
+                setTimeout(() => {
+                    status.classList.add('hidden');
+                }, 5000);
+            }
 
-          // Check if the trimmed value is an empty string and set it to null
-          const new_state = new_state_value === "" ? null : new_state_value;
+            hideAllForms() {
+                document.getElementById('productForm').classList.add('hidden');
+                document.getElementById('getByIdForm').classList.add('hidden');
+                document.getElementById('deleteForm').classList.add('hidden');
+                document.getElementById('categoryForm').classList.add('hidden');
+                document.getElementById('getCategoryByIdForm').classList.add('hidden');
+                document.getElementById('deleteCategoryForm').classList.add('hidden');
+            }
 
-          const currentFlag = this.featureFlags[flagName];
+            clearResults() {
+                document.getElementById('productResults').innerHTML = '';
+                document.getElementById('flagResults').innerHTML = '';
+                document.getElementById('categoryResults').innerHTML = '';
+            }
 
-          if (!currentFlag) {
-            this.showStatus("Flag data not found in local cache.", "error");
-            return;
-          }
+            // Product Methods
+            async getAllProducts() {
+                this.hideAllForms();
+                this.clearResults();
+                const data = await this.makeRequest(`${this.baseUrl}/products`);
+                if (data && data.items) {
+                    this.displayProducts(data.items);
+                    this.showStatus('Products loaded successfully!');
+                } else {
+                    console.error("Couldn't get data in the expected format: ", data);
+                    this.showStatus("Couldn't get the expected product data.", 'error');
+                }
+            }
 
-          // Call the existing backend function with the new state (which can be null)
-          await this.updateFlagStatus(
-            flagName,
-            userType,
-            currentFlag.isEnabled,
-            new_state
-          );
-        }
+            showGetByIdForm() {
+                this.hideAllForms();
+                this.clearResults();
+                document.getElementById('getByIdForm').classList.remove('hidden');
+            }
 
-        toggleEditStateUI(uniqueId, isEditMode) {
-          const viewDiv = document.getElementById(`state-view-${uniqueId}`);
-          const editDiv = document.getElementById(`state-edit-${uniqueId}`);
+            async searchProduct() {
+                const id = document.getElementById('searchProductId').value;
+                if (!id) {
+                    this.showStatus('Please enter a product ID', 'error');
+                    return;
+                }
+                const data = await this.makeRequest(`${this.baseUrl}/products/${id}`);
+                if (data) {
+                    this.displayProducts([data]);
+                    this.showStatus('Product found!');
+                    this.hideAllForms();
+                }
+            }
 
-          console.log("Toggling UI for:", uniqueId, "Edit mode:", isEditMode);
-          console.log("View Div:", viewDiv, "Edit Div:", editDiv);
+            showCreateForm() {
+                this.hideAllForms();
+                this.clearResults();
+                document.getElementById('formTitle').textContent = 'Create Product';
+                document.getElementById('submitProductBtn').textContent = 'Create Product';
+                document.getElementById('productIdLabel').classList.add('hidden');
+                document.getElementById('productId').classList.add('hidden');
+                this.clearProductForm();
+                document.getElementById('productForm').classList.remove('hidden');
+            }
 
-          if (isEditMode) {
-            viewDiv.classList.remove("show");
-            viewDiv.classList.add("hide");
-            editDiv.classList.remove("hide");
-            editDiv.classList.add("show");
-          } else {
-            viewDiv.classList.remove("hide");
-            viewDiv.classList.add("show");
-            editDiv.classList.remove("show");
-            editDiv.classList.add("hide");
-          }
-        }
+            showUpdateForm() {
+                this.hideAllForms();
+                this.clearResults();
+                this.getAllProducts();
+                document.getElementById('formTitle').textContent = 'Update Product';
+                document.getElementById('submitProductBtn').textContent = 'Update Product';
+                document.getElementById('productIdLabel').classList.remove('hidden');
+                document.getElementById('productId').classList.remove('hidden');
+                this.clearProductForm();
+                document.getElementById('productForm').classList.remove('hidden');
+            }
 
-        displayFlags(flags) {
-          const container = document.getElementById("flagResults");
-          if (!flags || flags.length === 0) {
-            container.innerHTML =
-              '<div class="product-card">No feature flags found</div>';
-            return;
-          }
+            showDeleteForm() {
+                this.hideAllForms();
+                this.clearResults();
+                this.getAllProducts();
+                document.getElementById('deleteForm').classList.remove('hidden');
+            }
 
-          const table = `
-                <table class="flag-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>User Type</th>
-                            <th>Status</th>
-                            <th>State</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${flags
-                          .map((flag) => {
+            async submitProduct() {
+                const name = document.getElementById('productName').value;
+                const price = parseFloat(document.getElementById('productPrice').value);
+                const categoryId = document.getElementById('categoryId').value;
+                const productId = document.getElementById('productId').value;
+
+                if (!name || !price) {
+                    this.showStatus('Please fill in all required fields', 'error');
+                    return;
+                }
+                const productData = {
+                    name,
+                    price,
+                    categoryId: categoryId ? parseInt(categoryId) : null,
+                };
+
+                let url, method;
+                if (productId) {
+                    const updateFlag = this.featureFlags['UpdateProductEnabled'];
+                    if (updateFlag && updateFlag.state) {
+                        url = `${this.baseUrl}/products/${updateFlag.state}/${productId}`;
+                    } else {
+                        url = `${this.baseUrl}/products/${productId}`;
+                    }
+                    method = 'PUT';
+                } else {
+                    const createFlag = this.featureFlags['CreateProductEnabled'];
+                    if (createFlag && createFlag.state) {
+                        url = `${this.baseUrl}/products/${createFlag.state}`;
+                    } else {
+                        url = `${this.baseUrl}/products`;
+                    }
+                    method = 'POST';
+                }
+
+                const data = await this.makeRequest(url, {
+                    method,
+                    body: JSON.stringify(productData),
+                });
+                if (data) {
+                    this.showStatus(`Product ${productId ? 'updated' : 'created'} successfully!`);
+                    this.hideAllForms();
+                    this.clearProductForm();
+                    this.displayProducts([data]);
+                }
+            }
+
+            async deleteProduct() {
+                const id = document.getElementById('deleteProductId').value;
+                if (!id) {
+                    this.showStatus('Please enter a product ID', 'error');
+                    return;
+                }
+                const response = await this.makeRequest(`${this.baseUrl}/products/${id}`, {
+                    method: 'DELETE',
+                });
+                if (response !== null) {
+                    this.showStatus('Product deleted successfully!');
+                    this.hideAllForms();
+                }
+            }
+
+            clearProductForm() {
+                document.getElementById('productName').value = '';
+                document.getElementById('productPrice').value = '';
+                document.getElementById('categoryId').value = '';
+                document.getElementById('productId').value = '';
+            }
+
+            displayProducts(products) {
+                const container = document.getElementById('productResults');
+                if (!products || products.length === 0) {
+                    container.innerHTML = '<div class="product-card">No products found</div>';
+                    return;
+                }
+                container.innerHTML = products
+                    .map(
+                        (product) => `
+                                <div class="product-card">
+                                    <div class="product-header">
+                                        <span class="product-name">${product.name}</span>
+                                        <span class="product-price">${product.price}</span>
+                                    </div>
+                                    <div>ID: ${product.id}</div>
+                                    <div>Category ID: ${product.categoryId || 'None'}</div>
+                                </div>
+                            `
+                    )
+                    .join('');
+            }
+
+            // Category Methods
+            async getAllCategories() {
+                this.hideAllForms();
+                this.clearResults();
+                const data = await this.makeRequest(`${this.baseUrl}/categories`);
+                if (data) {
+                    this.displayCategories(data);
+                    this.showStatus('Categories loaded successfully!');
+                }
+            }
+
+            showGetCategoryByIdForm() {
+                this.hideAllForms();
+                this.clearResults();
+                document.getElementById('getCategoryByIdForm').classList.remove('hidden');
+            }
+
+            async searchCategory() {
+                const id = document.getElementById('searchCategoryId').value;
+                if (!id) {
+                    this.showStatus('Please enter a category ID', 'error');
+                    return;
+                }
+                const data = await this.makeRequest(`${this.baseUrl}/categories/${id}`);
+                if (data) {
+                    this.displayCategories([data]);
+                    this.showStatus('Category found!');
+                    this.hideAllForms();
+                }
+            }
+
+            showCreateCategoryForm() {
+                this.hideAllForms();
+                this.clearResults();
+                document.getElementById('categoryFormTitle').textContent = 'Create Category';
+                document.getElementById('submitCategoryBtn').textContent = 'Create Category';
+                document.getElementById('updateCategoryIdLabel').classList.add('hidden');
+                document.getElementById('updateCategoryId').classList.add('hidden');
+                this.clearCategoryForm();
+                document.getElementById('categoryForm').classList.remove('hidden');
+            }
+
+            showUpdateCategoryForm() {
+                this.hideAllForms();
+                this.clearResults();
+                this.getAllCategories();
+                document.getElementById('categoryFormTitle').textContent = 'Update Category';
+                document.getElementById('submitCategoryBtn').textContent = 'Update Category';
+                document.getElementById('updateCategoryIdLabel').classList.remove('hidden');
+                document.getElementById('updateCategoryId').classList.remove('hidden');
+                this.clearCategoryForm();
+                document.getElementById('categoryForm').classList.remove('hidden');
+            }
+
+            showDeleteCategoryForm() {
+                this.hideAllForms();
+                this.clearResults();
+                this.getAllCategories();
+                document.getElementById('deleteCategoryForm').classList.remove('hidden');
+            }
+
+            async submitCategory() {
+                const name = document.getElementById('categoryName').value;
+                const categoryId = document.getElementById('updateCategoryId').value;
+
+                if (!name) {
+                    this.showStatus('Please enter a category name', 'error');
+                    return;
+                }
+                const categoryData = { name };
+
+                let url, method;
+                if (categoryId) {
+                    url = `${this.baseUrl}/categories/${categoryId}`;
+                    method = 'PUT';
+                } else {
+                    url = `${this.baseUrl}/categories`;
+                    method = 'POST';
+                }
+
+                const data = await this.makeRequest(url, {
+                    method,
+                    body: JSON.stringify(categoryData),
+                });
+                if (data) {
+                    this.showStatus(`Category ${categoryId ? 'updated' : 'created'} successfully!`);
+                    this.hideAllForms();
+                    this.clearCategoryForm();
+                    this.displayCategories([data]);
+                }
+            }
+
+            async deleteCategory() {
+                const id = document.getElementById('deleteCategoryId').value;
+                if (!id) {
+                    this.showStatus('Please enter a category ID', 'error');
+                    return;
+                }
+                const response = await this.makeRequest(`${this.baseUrl}/categories/${id}`, {
+                    method: 'DELETE',
+                });
+                if (response !== null) {
+                    this.showStatus('Category deleted successfully!');
+                    this.hideAllForms();
+                }
+            }
+
+            clearCategoryForm() {
+                document.getElementById('categoryName').value = '';
+                document.getElementById('updateCategoryId').value = '';
+            }
+
+            displayCategories(categories) {
+                const container = document.getElementById('categoryResults');
+                if (!categories || categories.length === 0) {
+                    container.innerHTML = '<div class="product-card">No categories found</div>';
+                    return;
+                }
+                container.innerHTML = categories
+                    .map(
+                        (category) => `
+                                <div class="product-card">
+                                    <div class="product-header">
+                                        <span class="product-name">${category.name}</span>
+                                    </div>
+                                    <div>ID: ${category.id}</div>
+                                </div>
+                            `
+                    )
+                    .join('');
+            }
+
+            // Feature Flag Methods
+            async getAllFlags() {
+                const data = await this.makeRequest(`${this.baseUrl}/flags`);
+                if (data) {
+                    this.displayFlags(data);
+                    this.showStatus('Feature flags loaded successfully!');
+                }
+            }
+
+            async getMyFeatures() {
+                if (!this.authToken) {
+                    this.showStatus('Please login to view your features', 'error');
+                    return;
+                }
+
+                const data = await this.makeRequest(`${this.baseUrl}/me/features`);
+                if (data) {
+                    this.displayMyFeatures(data);
+                    this.showStatus('Your features loaded successfully!');
+                }
+            }
+
+            displayMyFeatures(features) {
+                const container = document.getElementById('flagResults');
+                if (!features || features.length === 0) {
+                    container.innerHTML = '<div class="product-card">No features found</div>';
+                    return;
+                }
+
+                const table = `
+                        <h3>My Active Features</h3>
+                        <table class="flag-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>State</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${features
+                        .map((feature) => `
+                                        <tr>
+                                            <td>${feature.name}</td>
+                                            <td>
+                                                <span class="toggle-btn ${feature.isEnabled ? 'enabled' : 'disabled'}">
+                                                    ${feature.isEnabled ? 'Enabled' : 'Disabled'}
+                                                </span>
+                                            </td>
+                                            <td>${feature.state || 'N/A'}</td>
+                                        </tr>
+                                    `)
+                        .join('')}
+                            </tbody>
+                        </table>
+                    `;
+                container.innerHTML = table;
+            }
+
+            async updateFlagStatus(name, userType, isEnabled, state) {
+                console.log(`📡 Updating flag: ${name} for ${userType}`);
+
+                const requestBody = {
+                    isEnabled: isEnabled,
+                    state: state,
+                    userType: userType,
+                };
+
+                try {
+                    const response = await fetch(`${this.baseUrl}/flags/${name}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'User-Type': this.currentUser,
+                            ...(this.authToken && { 'Authorization': `Bearer ${this.authToken}` })
+                        },
+                        body: JSON.stringify(requestBody),
+                    });
+
+                    if (response.ok) {
+                        this.showStatus(`Flag '${name}' updated successfully!`, 'success');
+                        await this.getAndStoreFeatureFlags();
+                        await this.getAllFlags();
+                    } else if (response.status === 404) {
+                        this.showStatus('Flag not found!', 'error');
+                    } else if (response.status === 401 || response.status === 403) {
+                        this.showStatus('Not authorized to update flags!', 'error');
+                    } else {
+                        const errorText = await response.text();
+                        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                    }
+                } catch (error) {
+                    console.error('Update failed:', error);
+                    this.showStatus(`Failed to update flag: ${error.message}`, 'error');
+                }
+            }
+
+            async updateStateFromUI(flagName, userType, uniqueId) {
+                const new_state_value = document.getElementById(`state-input-${uniqueId}`).value.trim();
+                const new_state = new_state_value === '' ? null : new_state_value;
+                const currentFlag = this.featureFlags[flagName];
+
+                if (!currentFlag) {
+                    this.showStatus('Flag data not found in local cache.', 'error');
+                    return;
+                }
+
+                await this.updateFlagStatus(flagName, userType, currentFlag.isEnabled, new_state);
+            }
+
+            toggleEditStateUI(uniqueId, isEditMode) {
+                const viewDiv = document.getElementById(`state-view-${uniqueId}`);
+                const editDiv = document.getElementById(`state-edit-${uniqueId}`);
+
+                console.log('Toggling UI for:', uniqueId, 'Edit mode:', isEditMode);
+                console.log('View Div:', viewDiv, 'Edit Div:', editDiv);
+
+                if (isEditMode) {
+                    viewDiv.classList.remove('show');
+                    viewDiv.classList.add('hide');
+                    editDiv.classList.remove('hide');
+                    editDiv.classList.add('show');
+                } else {
+                    viewDiv.classList.remove('hide');
+                    viewDiv.classList.add('show');
+                    editDiv.classList.remove('show');
+                    editDiv.classList.add('hide');
+                }
+            }
+
+            displayFlags(flags) {
+                const container = document.getElementById('flagResults');
+                if (!flags || flags.length === 0) {
+                    container.innerHTML = '<div class="product-card">No feature flags found</div>';
+                    return;
+                }
+
+                const table = `
+                        <table class="flag-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>User Type</th>
+                                    <th>Status</th>
+                                    <th>State</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${flags
+                        .map((flag) => {
                             const uniqueId = `${flag.name}-${flag.userType}`;
                             return `
-                                <tr>
-                                    <td>${flag.name}</td>
-                                    <td>${flag.userType}</td>
-                                    <td>
-                                        <button 
-                                            class="toggle-btn ${
-                                              flag.isEnabled
-                                                ? "enabled"
-                                                : "disabled"
-                                            }" 
-                                            onclick="productManager.updateFlagStatus('${
-                                              flag.name
-                                            }', '${
-                              flag.userType
-                            }', ${!flag.isEnabled}, '${flag.state}')">
-                                            ${
-                                              flag.isEnabled
-                                                ? "Enabled"
-                                                : "Disabled"
-                                            }
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <div id="state-view-${uniqueId}" class="show" style="align-items:center; gap: 5px;">
-                                            <span>${flag.state || "N/A"}</span>
-                                            <button 
-                                                class="btn btn-info"
-                                                style="padding: 6px 12px; font-size: 12px;"
-                                                onclick="productManager.toggleEditStateUI('${uniqueId}', true)">
-                                                Edit
-                                            </button>
-                                        </div>
-                                        <div id="state-edit-${uniqueId}" class="hide" style="flex-direction:row; align-items:center; gap: 5px;">
-                                            <input 
-                                                type="text" 
-                                                id="state-input-${uniqueId}" 
-                                                value="${flag.state || ""}" 
-                                                placeholder="Enter state"
-                                                style="max-width: 100px;">
-                                            <button 
-                                                class="btn btn-success"
-                                                style="padding: 6px 12px; font-size: 12px;"
-                                                onclick="productManager.updateStateFromUI('${
-                                                  flag.name
-                                                }', '${
-                              flag.userType
-                            }', '${uniqueId}')">
-                                                Update
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            `;
-                          })
-                          .join("")}
-                    </tbody>
-                </table>
-            `;
-          container.innerHTML = table;
+                                        <tr>
+                                            <td>${flag.name}</td>
+                                            <td>${flag.userType}</td>
+                                            <td>
+                                                <button
+                                                    class="toggle-btn ${flag.isEnabled ? 'enabled' : 'disabled'}"
+                                                    onclick="productManager.updateFlagStatus('${flag.name}', '${flag.userType
+                                }', ${!flag.isEnabled}, '${flag.state}')">
+                                                    ${flag.isEnabled ? 'Enabled' : 'Disabled'}
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <div id="state-view-${uniqueId}" class="show" style="align-items:center; gap: 5px;">
+                                                    <span>${flag.state || 'N/A'}</span>
+                                                    <button
+                                                        class="btn btn-info"
+                                                        style="padding: 6px 12px; font-size: 12px;"
+                                                        onclick="productManager.toggleEditStateUI('${uniqueId}', true)">
+                                                        Edit
+                                                    </button>
+                                                </div>
+                                                <div id="state-edit-${uniqueId}" class="hide" style="flex-direction:row; align-items:center; gap: 5px;">
+                                                    <input
+                                                        type="text"
+                                                        id="state-input-${uniqueId}"
+                                                        value="${flag.state || ''}"
+                                                        placeholder="Enter state"
+                                                        style="max-width: 100px;">
+                                                    <button
+                                                        class="btn btn-success"
+                                                        style="padding: 6px 12px; font-size: 12px;"
+                                                        onclick="productManager.updateStateFromUI('${flag.name}', '${flag.userType
+                                }', '${uniqueId}')">
+                                                        Update
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `;
+                        })
+                        .join('')}
+                            </tbody>
+                        </table>
+                    `;
+                container.innerHTML = table;
+            }
         }
-      }
 
-      const productManager = new ProductManager();
+        const productManager = new ProductManager();
     </script>
-  </body>
+</body>
 </html>
